@@ -16,7 +16,6 @@ app.use(express.static(path.join(__dirname, '../client')));
 
 //: Corrosponds websites to URLs
 
-
 //: Corrosponds navigation pane's buttons to pages
 function showHome(){
     console.log("go home")

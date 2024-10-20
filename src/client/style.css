@@ -1,0 +1,19 @@
+/*Colours are done in 3 hex digits instead of 6 to get rid of negligible detail*/
+body {
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0; /*prevents unexpected spacing*/
+    background-color: #888;
+}
+
+.navbar {
+    /* dispite only havine one per page, it is a class instead of an id as there are multiple texts in the navbar*/
+    display: flex; /*evenly spaces each button*/
+    a {
+        flex: 1; /*evenly spaces each button*/
+        padding: 14px 20px;
+        text-align: center;
+        color: #fff; background-color: #036;
+        transition: background-color 0.3s; /*smooth animation of transition*/
+        &:hover { color: #000; background-color: #fb0; } /*after transition*/
+    }
+}

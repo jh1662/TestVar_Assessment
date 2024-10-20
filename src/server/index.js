@@ -12,12 +12,16 @@ app.listen(
 //: the rest of the setup
 const path = require('path');
 //^ allows fetching of other files
+app.use(express.static(path.join(__dirname, '../client')));
 
 //: Corrosponds websites to URLs
-app.get('/', function(req, res) {
-    //* home page
+
+
+//: Corrosponds navigation pane's buttons to pages
+function showHome(){
+    console.log("go home")
     res.sendFile(path.join(__dirname, '../client/home.html'));
-});
+}
 
 /* DEBUG LOG:
 > Fixed error: "TypeError: Cannot read properties of undefined (reading 'headersSent')"

@@ -5,10 +5,10 @@ body {
     background-color: #888;
 }
 
-.navbar {
+nav {
     /* dispite only havine one per page, it is a class instead of an id as there are multiple texts in the navbar*/
     display: flex; /*evenly spaces each button*/
-    a {
+    ul {
         flex: 1; /*evenly spaces each button*/
         padding: 14px 20px;
         text-align: center;

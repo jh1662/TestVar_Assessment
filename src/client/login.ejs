@@ -1,0 +1,26 @@
+<%- include('assets/header.html') %>
+<title>Login</title>
+</header>
+<body>
+  <%- include('assets/nav.html') %>
+  <main>
+  <h1>Login</h1>
+
+  <div class="loginContainer">
+    <h2>Enter credentials:</h2>
+    <form action="/user" method="POST">
+      <div class="inputGroup">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div class="inputGroup">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  </main>
+  <%- include('assets/footer.html') %>
+</body>

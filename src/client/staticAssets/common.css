@@ -1,0 +1,30 @@
+/*! CSS code that all rendered pages are expected to use*/
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0; /* prevents unexpected spacing */
+    color:#fff; background-color:#333;
+    text-align: center;
+}
+button,a { /** Inherits from 'body'*/
+  background-color:#112; color:#fff;
+  justify-content: center;
+  padding: 1rem 2rem; /* spacing between the text of each button and the edge of the nav bar */
+  transition: background-color 0.3s; /* smooth animation of transition */
+  &:hover { background-color:#da3; }
+}
+nav {
+  background-color:#112;
+  ul {
+    list-style: none;
+    margin: 0; padding: 0; /* needs to be repeated in nesting */
+    display: flex; /* evenly spaces each button */
+    justify-content: center; /* basicly "text-align" but for elements */
+    a { display: block; } /* expand parent to atleast the button's dimentions */
+    /*^ Inherits from 'button,a' */
+  }
+}
+footer {
+  background-color:#112;
+  text-align: center;
+}

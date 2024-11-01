@@ -5,6 +5,8 @@
   "main": "src/server/index.js",
   "scripts": {
     "dev": "nodemon src/server/index.js",
+    "tryS": "node src/server/test.js",
+    "fill": "node dev/dBFiller.js",
     "test": "jest"
   },
   "author": "",

@@ -1,0 +1,20 @@
+meta {
+  name: Update a user by ID
+  type: http
+  seq: 6
+}
+
+put {
+  url: http://localhost:3000/api/users/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": 1,
+    "username": "johndoe",
+    "admin": false,
+    "password": "password"
+  }
+}

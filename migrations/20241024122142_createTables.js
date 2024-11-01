@@ -4,6 +4,12 @@
 > npx knex migrate:make ...
 */
 
+/* Quick command set:
+npx knex migrate:rollback
+npx knex migrate:latest
+npm run fill
+*/
+
 //! table names have their first char capitalised to differ from attributes
 
 //! also for some unkown reason any code inside 'migrations' folder are incapable from running raw sqlite code
@@ -11,16 +17,19 @@
 
 //: setting up database's tables
 exports.up = function(knex) { return knex.schema
-    .createTable('FlashCards',function(table){
+    .createTable('Flashcards',function(table){
         table.increments('id').primary();
         //^ "primary()" includes "notNullable()" and "unique()"
         table.string('front').notNullable();
         table.string('back').notNullable();
+        table.integer('difficulty').notNullable();
     }).
     createTable('Users',function(table){
         table.increments('id').primary();
         table.string('username').notNullable().unique();
         table.string('password').notNullable();
+        table.boolean('admin').notNullable();
+        //^ ".defaultTo(false)" doesn't work as inserted 'null's remain as nulls instead of 'false'
     }).
     createTable('Collections',function(table){
         table.increments('id').primary();
@@ -28,28 +37,28 @@ exports.up = function(knex) { return knex.schema
         table.float('averageReview');
         //^ Fully dependant on the 'Reviews' table
         //: foreign keys (links):
-        table.integer('userId').notNullable().unique(); table.foreign('userId').references('id').inTable('Users');
+        table.integer('userId').notNullable(); table.foreign('userId').references('id').inTable('Users');
     }).
     createTable('Reviews',function(table){
         table.increments('id').primary();
         table.integer('rating').notNullable();
         //: foreign keys (links):
-        table.string('userId').notNullable().unique(); table.foreign('userId').references('id').inTable('Users');
-        table.string('collectionsId').notNullable().unique(); table.foreign('collectionsId').references('id').inTable('Collections');
+        table.string('userId').notNullable(); table.foreign('userId').references('id').inTable('Users');
+        table.string('collectionsId').notNullable(); table.foreign('collectionsId').references('id').inTable('Collections');
     }).
     createTable('Comments',function(table){
         table.increments('id').primary();
         table.text('content').notNullable();
         //: foreign keys (links):
-        table.string('userId').notNullable().unique(); table.foreign('userId').references('id').inTable('Users');
-        table.string('collectionsId').notNullable().unique(); table.foreign('collectionsId').references('id').inTable('Collections');
+        table.string('userId').notNullable(); table.foreign('userId').references('id').inTable('Users');
+        table.string('collectionsId').notNullable(); table.foreign('collectionsId').references('id').inTable('Collections');
     }).
     createTable('CollectionsToFlashcards',function(table){
         //* Created to solely deal with a many-to-many relationship (junction table)
         table.increments('id').primary();
         //: foreign keys (links):
-        table.string('userId').notNullable().unique(); table.foreign('userId').references('id').inTable('Users');
-        table.string('collectionsId').notNullable().unique(); table.foreign('collectionsId').references('id').inTable('Collections');
+        table.string('flashcardId').notNullable(); table.foreign('flashcardId').references('id').inTable('Flashcards');
+        table.string('collectionsId').notNullable(); table.foreign('collectionsId').references('id').inTable('Collections');
     })
     //? need to implement the 'hide card' feature
 };

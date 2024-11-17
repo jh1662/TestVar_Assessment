@@ -34,8 +34,11 @@ async function fill() {
     console.log('Data inserted successfully');
   }
   catch (error) {
-    console.error('DA ERROR:', error);
+    console.error('Error when inserting filler data:', error);
   }
 }
 
 fill();
+//db.destroy();
+//^ causes the error with message "aborted"
+//^ doesn't matter much as it timesout (without error) after a little while

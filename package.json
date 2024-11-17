@@ -7,6 +7,7 @@
     "dev": "nodemon src/server/index.js",
     "tryS": "node src/server/test.js",
     "fill": "node dev/dBFiller.js",
+    "reFill": "npx knex migrate:rollback && npx knex migrate:latest && npm run fill",
     "test": "jest"
   },
   "author": "",

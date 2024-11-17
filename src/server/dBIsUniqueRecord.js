@@ -11,7 +11,6 @@ async function user(username){
 
 async function userId(id){
     const result = await db('Users').where({ id: id }).first();
-    console.log(result);
     if (result){ return false; }
     return true;
 }

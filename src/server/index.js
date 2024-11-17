@@ -2,10 +2,10 @@
 try{
 }catch(err){console.log(err.message);}
 */
-
+//#region import and set-ups
 //: set up and instantiate the APIs for the API with 'knex' to use the 'SQLite3' DBMS (DataBase Management System)
-const db = require('./dataBaseMS');
-const rs = require('./dBRestrictions');
+const db = require('./databaseMS');
+const rs = require('./dBIsUniqueRecord');
 
 //: set up and instantiate the API for reading from JSON files
 const fs = require('fs');
@@ -30,7 +30,7 @@ app.use(express.static(path.join(__dirname, '../client/staticAssets/')));
 //^ files to send to client no matter what user requests
 app.set('views', path.join(__dirname, '../client/'));
 //^ tells the location of the folder of files where some are to be rendered
-
+//#endregion
 
 //: Corrosponds websites to URLs
 
@@ -74,31 +74,93 @@ app.get('/api', async (req, res) => {
 app.get('/api/users', async (req, res) => {
     let result;
     try{ result = await db('Users').select('id', 'username', 'admin'); }
-    catch(err){ res.json({message: err.message}); return; }
-    res.set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
+    //^ try statement to catch errors in-case connection to database is not possible
+    catch(err){ res.status(500).json({message: err.message}); return; }
+    res.status(200)
+    .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     .send(result);
 });
 app.post('/api/users', async (req, res) => {
     const user = {id: req.body.id, username: req.body.username, password: req.body.password, admin: req.body.admin};
     let result;
     try{
-        if (!(await rs.user(user.username))){ res.json({message: "User (by username) already exists"}); return; }
-        if (!(await rs.userId(user.id))){ res.json({message: "User (by id) already exists"}); return; }
+        //* try statement to catch errors in-case connection to database is not possible
+        if (!(await rs.user(user.username))){ res.status(400).json({message: "User (by username) already exists"}); return; }
+        //^ id has to be unique
+        if (!(await rs.userId(user.id))){ res.status(400).json({message: "User (by id) already exists"}); return; }
+        //^ cant use duplicate username
+
+        //: ceating user
         if (user.id === undefined){ await db("Users").insert({username: user.username, password: user.password, admin: user.admin}); }
         else { await db("Users").insert({id: user.id, username: user.username, password: user.password, admin: user.admin}); }
-        console.log(user.username);
-        try{
-        //const result = await db('Users').where({username: user.username}).select('id', 'username', 'admin');
-        const result = await db('Users').where({ username: user.username });
-        } catch(err){console.log("DA ERROE -" + err.message);}
-        console.log("--2--");
-        res.set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
-        .json(JSON.parse(result));
-        console.log("--3--");
-    }
-    catch (err){ res.json({message: err.message}); }
-});
 
+        //: fetching and sendinging user details as API responce
+        result = await db('Users').where({ username: user.username }).select('id', 'username', 'admin').first();
+    }
+    catch (err){ res.status(400).json({message: err.message}); }
+    res.status(201)
+    .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
+    .json(result);
+});
+app.get('/api/users/:id', async (req, res) => {
+    const id = req.params.id;
+    //^ gets the varible's value from the URL
+    let result;
+    if (parseInt(id).isNaN){ res.status(404).json({message: "no valid 'id' value in request's body"}); return; }
+    try{
+        //* try statement to catch errors in-case connection to database is not possible or invalid data is inputted
+        if (await rs.userId(id)){
+            res.status(404)
+            .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
+            .json({message: "User does not exist as registered"}); return;
+        }
+        result = await db('Users').where({ id: id }).select('id', 'username', 'admin').first();
+    }
+    catch (err){ res.status(404).json({message: err.message}); return; }
+    res.status(201)
+    .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
+    .json(result);
+});
+app.put('/api/users/:id', async (req, res) => {
+    const id = req.params.id;
+    if (parseInt(id).isNaN){ res.status(404).json({message: "no valid 'id' value in request's body"}); return; }
+    try{
+        //* try statement to catch errors in-case connection to database is not possible
+        if (await rs.userId(id)){
+            res.status(404)
+            .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
+            .json({message: "User does not exist as registered"}); return;
+        }
+        await db('Users').where({ id: id }).update({id: req.body.id, username: req.body.username, password: req.body.password, admin: req.body.admin});
+        const result = await db('Users').where({ id: id }).select('id', 'username', 'admin').first();
+    }
+    catch (err){ res.status(404).json({message: err.message}); return; }
+    res.status(200)
+    .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
+    .json(result);
+});
+app.delete('/api/users/:id', async (req, res) => {
+    const id = req.params.id;
+    var result;
+    if (parseInt(id).isNaN){ res.status(404).json({message: "no valid 'id' value in request's body"}); return; }
+    try{
+        //* try statement to catch errors in-case connection to database is not possible
+        if (await rs.userId(id)){
+            res.status(404)
+            .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
+            .json({message: "User does not exist as registered"}); return;
+        }
+        // const username = await db('Users').where({ id: id }).select("username").first();
+        await db('Users').where({ id: id }).delete();
+        //^ Cannot chain ".first()"
+        // result = {message: `SUCCESS - user ${username}, with id ${id} has been deleted successfully`};
+        //^ Code 204 - explicitly indicates that there should be no content in the response body!
+    }
+    catch (err){ res.status(404).json({message: err.message}); return; }
+    res.status(204)
+    .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
+    .json(result);
+});
 //#endregion
 
 /* Guides used:
@@ -114,4 +176,8 @@ app.post('/api/users', async (req, res) => {
 app.use('/style.css', express.static(path.join(__dirname, 'public', 'style.css')));
 //^ Tells MIME (Multipurpose Internet Mail Extensions) that its a CSS file instead of HTML as error says: MIME type ('text/html') is not a supported stylesheet MIME type, and strict MIME checking is enabled.
 //^! This code line shouldn't be needed, yet it is.
+
+>V
+JSON.parse(data);
+//^ Only works for string not JS objects as apparently they are treated as JSON anyways
 */

@@ -1,0 +1,26 @@
+meta {
+  name: Create a new flashcard set
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3000/api/sets
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "European Capitals",
+    "cards": [
+      {
+        "front": "What is the capital of France?",
+        "back": "Paris",
+        "difficulty": "easy"
+      }
+    ],
+    "authorID": "1",
+    "description": "LA VIVA FRANCE"
+  }
+}

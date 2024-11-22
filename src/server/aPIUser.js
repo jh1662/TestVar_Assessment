@@ -1,11 +1,15 @@
 //: imports
-const db = require('./databaseMS');
 const rs = require('./dBIsUniqueRecord');
+//^ input validations functions
+const knex = require('knex');
+const config = require('../../knexfile');
+const db = knex(config.development);
+//^ setting up another DB connection as a single connection in multi JS file disrups the connection with a runtime error
 
 //#region GET requests
 async function GetAllUsersDetails(req,res){
     let result;
-    try{ result = await db('Users').select('id', 'username', 'admin'); }
+    try{ result = await db('Users').select('id', 'username', 'admin', 'dailySets'); }
     //^ try statement to catch errors in-case connection to database is not possible
     catch(err){ res.status(500).json({message: err.message}); return; }
     res.status(200)
@@ -25,7 +29,7 @@ async function GetIDUserDetails(req,res){
             .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
             .json({message: "User does not exist as registered"}); return;
         }
-        result = await db('Users').where({ id: id }).select('id', 'username', 'admin').first();
+        result = await db('Users').where({ id: id }).select('id', 'username', 'admin', 'dailySets').first();
     }
     catch (err){ res.status(404).json({message: err.message}); return; }
     res.status(201)
@@ -45,11 +49,11 @@ async function PostNewUser(req,res){
         //^ cant use duplicate username
 
         //: ceating user
-        if (user.id === undefined){ await db("Users").insert({username: user.username, password: user.password, admin: user.admin}); }
-        else { await db("Users").insert({id: user.id, username: user.username, password: user.password, admin: user.admin}); }
+        if (user.id === undefined){ await db("Users").insert({username: user.username, password: user.password, admin: user.admin, dailySets: "0"}); }
+        else { await db("Users").insert({id: user.id, username: user.username, password: user.password, admin: user.admin, dailySets: "0"}); }
 
         //: fetching and sendinging user details as API responce
-        result = await db('Users').where({ username: user.username }).select('id', 'username', 'admin').first();
+        result = await db('Users').where({ username: user.username }).select('id', 'username', 'admin', 'dailySets').first();
     }
     catch (err){ res.status(400).json({message: err.message}); }
     res.status(201)
@@ -69,8 +73,8 @@ async function PutIDUserUpdate(req,res){
             .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
             .json({message: "User does not exist as registered"}); return;
         }
-        await db('Users').where({ id: id }).update({id: req.body.id, username: req.body.username, password: req.body.password, admin: req.body.admin});
-        result = await db('Users').where({ id: id }).select('id', 'username', 'admin').first();
+        await db('Users').where({ id: id }).update({username: req.body.username, password: req.body.password, admin: req.body.admin});
+        result = await db('Users').where({ id: id }).select('id', 'username', 'admin', 'dailySets').first();
     }
     catch (err){ res.status(404).json({message: err.message}); return; }
     res.status(200)
@@ -104,4 +108,3 @@ async function DeleteIDUser(req,res){
 //#endregion
 
 module.exports = {GetAllUsersDetails, PostNewUser, GetIDUserDetails, PutIDUserUpdate, DeleteIDUser};
-//^ according to order in 'openapi.yaml' file

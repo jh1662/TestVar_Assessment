@@ -1,5 +1,6 @@
 //! for functions if result is '0', then it is valid, otherwise give a warning.
 
+/*
 function whiteSpace(input){
     //! input must not be an empty string.
     //* didn't declare constant at start because function may end before the constant is used.
@@ -15,6 +16,7 @@ function whiteSpace(input){
     };
     return "0";
 }
+*/
 
 function len(input){
     switch( len ){
@@ -28,18 +30,20 @@ function len(input){
 function name(input){
     //* didn't declare constant at start because function may end before the constant is used.
     //* declaring constants after function potentially terminates will potentially save memory (RAM storage)
-    if ( input.length > 32 ){ return "Invalid - name is too long, keep it underneath 33 characters long"}
+    if ( input === undefined ){ return "Invalid - input is empty (as 'undefined')"}
+    if ( input.length > 32 ){ return "Invalid - input is too long, keep it underneath 33 characters long"}
     const result = len(input)
-    if (result == "0"){ return whiteSpace(input); }
+    if (result == "0"){ return "0"; }
+    //^ is text valid?
     return result;
 };
 
 function text(input){
     //* didn't declare constant at start because function may end before the constant is used.
     //* declaring constants after function potentially terminates will potentially save memory (RAM storage)
-    if ( input.length > 1024 ){ return "Invalid - name is too long, keep it underneath 33 characters long"}
+    if ( input.length > 1024 ){ return "Invalid - input is too long, keep it underneath 1024 characters long"}
     const result = len(input)
-    if (result == "0"){ return whiteSpace(input); }
+    if (result == "0"){ return "0"; }
     return result;
 }
 

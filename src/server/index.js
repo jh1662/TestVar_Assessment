@@ -7,6 +7,7 @@ try{
 const db = require('./databaseMS');
 const rs = require('./dBIsUniqueRecord');
 const user = require('./aPIUser');
+const sets = require('./aPISets');
 
 //: set up and instantiate the API for reading from JSON files
 const fs = require('fs');
@@ -54,12 +55,6 @@ app.post('/user', (req, res) => {
 app.get('/api', async (req, res) => {
     fs.readFile(path.join(__dirname, '../client/assets/api.json'), 'utf8', (err, data) => {
         if (err) {
-            /*
-            const message = {
-                title: "ERROR", subTitle: "Code: 500",
-                msg: "The API version JSON file was not found"
-            };
-            */
             res.status(500).json({message: err.message});
         }
         else{
@@ -77,6 +72,16 @@ app.post('/api/users', user.PostNewUser);
 app.get('/api/users/:id', user.GetIDUserDetails);
 app.put('/api/users/:id', user.PutIDUserUpdate);
 app.delete('/api/users/:id', user.DeleteIDUser);
+
+//:API requests for flashcards
+app.get('/api/sets', sets.GetAllSets);
+app.post('/api/sets', sets.CreateNewSet);
+//app.get('/api/sets/:id', sets.GetIDSet);
+//app.put('/api/sets/:id', sets.PutIDSet);
+//app.delete('/api/sets/:id', sets.DeleteIDSet);
+//app.post('/sets/:id/comment', sets.PostIDSetComment);
+//app.get('/api/sets/:id/cards', sets.GetIDSetCards);
+//
 
 
 /* Guides used:
@@ -105,4 +110,9 @@ res.status(204)
 .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
 .json(result);
 
+>V
+    const message = {
+    title: "ERROR", subTitle: "Code: 500",
+    msg: "The API version JSON file was not found"
+};
 */

@@ -17,25 +17,37 @@ npm run fill
 
 //: setting up database's tables
 exports.up = function(knex) { return knex.schema
-    .createTable('Flashcards',function(table){
+    .createTable('Users',function(table){
         table.increments('id').primary();
         //^ "primary()" includes "notNullable()" and "unique()"
+        table.string('username').notNullable().unique();
+        table.string('password').notNullable();
+        //^ EXTRA - the 'openapi.yaml' doesnt specify this but common sense says otherwise
+        table.boolean('admin').notNullable();
+        //^ ".defaultTo(false)" doesn't work as inserted 'null's remain as nulls instead of 'false'
+        table.integer('dailySets').notNullable();
+    }).
+    createTable('Sets',function(table){
+        table.increments('id').primary();
+        table.string('name').notNullable().unique();
+        table.string('description')
+        table.float('averageReview');
+        //^ Fully dependant on the 'Reviews' table
+        //: foreign keys (links):
+        table.integer('userId').notNullable(); table.foreign('userId').references('id').inTable('Users');
+    }).
+    createTable('Flashcards',function(table){
+        table.increments('id').primary();
         table.string('front').notNullable();
         table.string('back').notNullable();
         table.integer('difficulty').notNullable();
-    }).
-    createTable('Users',function(table){
-        table.increments('id').primary();
-        table.string('username').notNullable().unique();
-        table.string('password').notNullable();
-        table.boolean('admin').notNullable();
-        //^ ".defaultTo(false)" doesn't work as inserted 'null's remain as nulls instead of 'false'
+        //: foreign keys (links):
+        table.integer('setsId').notNullable(); table.foreign('setsId').references('id').inTable('Sets');
     }).
     createTable('Collections',function(table){
         table.increments('id').primary();
         table.string('name').notNullable().unique();
-        table.float('averageReview');
-        //^ Fully dependant on the 'Reviews' table
+        table.string('description')
         //: foreign keys (links):
         table.integer('userId').notNullable(); table.foreign('userId').references('id').inTable('Users');
     }).
@@ -44,20 +56,20 @@ exports.up = function(knex) { return knex.schema
         table.integer('rating').notNullable();
         //: foreign keys (links):
         table.string('userId').notNullable(); table.foreign('userId').references('id').inTable('Users');
-        table.string('collectionsId').notNullable(); table.foreign('collectionsId').references('id').inTable('Collections');
+        table.string('SetsId').notNullable(); table.foreign('SetsId').references('id').inTable('Sets');
     }).
     createTable('Comments',function(table){
         table.increments('id').primary();
         table.text('content').notNullable();
         //: foreign keys (links):
         table.string('userId').notNullable(); table.foreign('userId').references('id').inTable('Users');
-        table.string('collectionsId').notNullable(); table.foreign('collectionsId').references('id').inTable('Collections');
+        table.string('SetsId').notNullable(); table.foreign('SetsId').references('id').inTable('Sets');
     }).
-    createTable('CollectionsToFlashcards',function(table){
+    createTable('CollectionsToSets',function(table){
         //* Created to solely deal with a many-to-many relationship (junction table)
         table.increments('id').primary();
         //: foreign keys (links):
-        table.string('flashcardId').notNullable(); table.foreign('flashcardId').references('id').inTable('Flashcards');
+        table.string('SetsId').notNullable(); table.foreign('SetsId').references('id').inTable('Sets');
         table.string('collectionsId').notNullable(); table.foreign('collectionsId').references('id').inTable('Collections');
     })
     //? need to implement the 'hide card' feature
@@ -68,7 +80,8 @@ exports.down = function(knex) { return knex.schema
     .dropTableIfExists('FlashCards')
     .dropTableIfExists('Users')
     .dropTableIfExists('Collections')
+    .dropTableIfExists('Sets')
     .dropTableIfExists('Comments')
     .dropTableIfExists('Reviews')
-    .dropTableIfExists('CollectionsToFlashcards');
+    .dropTableIfExists('CollectionsToSets');
 };

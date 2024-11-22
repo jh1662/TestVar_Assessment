@@ -1,0 +1,17 @@
+meta {
+  name: Comment on a flashcard set by ID, by the current user
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:3000/api/sets/1/comment
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "comment": "I love this set!"
+  }
+}

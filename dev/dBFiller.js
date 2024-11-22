@@ -1,34 +1,36 @@
 const knex = require('knex');
 const config = require('../knexfile');
+const { describe } = require('node:test');
 const db = knex(config.development);
 
 async function fill() {
   //* "await" allows creations to happen in order to prevent attempts of adding a record with atleast a missing depenancy (foreign keys)
   try {
-    await db('Flashcards').insert([
-      { front: 'what is "2+2 ?', back: '4', difficulty: 1 },
-      { front: 'what is "hi" spelled backwards?', back: 'ih', difficulty: 5 },
-      { front: 'If a grain of rice was shot at an initial velocity of 20 miles per hour at 5 meters high, how long until the rice hit the ground taking into account the curve of the earth but not gravity to 6 d.p.?', back: '3.457565 seconds', difficulty: 0 }
-    ]);
     await db('Users').insert([
-      { username: 'JohnWick', password: 'dogs', admin: false },
-      { username: 'Arbbys', password: 'Password1', admin: false },
-      { username: 'dripler', password: 'ALDI', admin: true }
+      { username: 'JohnWick', password: 'dogs', admin: false, dailySets: 0 },
+      { username: 'Arbbys', password: 'Password1', admin: false, dailySets: 1 },
+      { username: 'dripler', password: 'ALDI', admin: true, dailySets: 20 }
+    ]);
+    await db('Sets').insert([
+      { name: 'da quiz', averageReview: 4.5, userId: 1, description: "set of random questions" }
+    ]);
+    await db('Flashcards').insert([
+      { front: 'what is "2+2 ?', back: '4', difficulty: 1, setsId: 0 },
+      { front: 'what is "hi" spelled backwards?', back: 'ih', difficulty: 5, setsId: 0 },
+      { front: 'If a grain of rice was shot at an initial velocity of 20 miles per hour at 5 meters high, how long until the rice hit the ground taking into account the curve of the earth but not gravity to 6 d.p.?', back: '3.457565 seconds', difficulty: 0, setsId: 0 }
     ]);
     await db('Collections').insert([
-      { name: 'da quiz', averageReview: 4.5, userId: 1 }
+      { name: 'my favs', description: "I really like these set(s)", userId: 1 }
     ]);
     await db('Reviews').insert([
-      { rating: 5, userId: 3, collectionsId: 1 },
-      { rating: 4, userId: 2, collectionsId: 1 }
+      { rating: 5, userId: 3, setsId: 1 },
+      { rating: 4, userId: 2, setsId: 1 }
     ]);
     await db('Comments').insert([
-      { content: "YOOOOOOOOOOOOOOOOOO", userId: 3, collectionsId: 1 }
+      { content: "YOOOOOOOOOOOOOOOOOO", userId: 3, setsId: 1 }
     ]);
-    await db('CollectionsToFlashcards').insert([
-      { flashcardId: 1, collectionsId: 1 },
-      { flashcardId: 2, collectionsId: 1 },
-      { flashcardId: 3, collectionsId: 1 }
+    await db('CollectionsToSets').insert([
+      { collectionsId: 1, setsId: 1 }
     ]);
 
     console.log('Data inserted successfully');

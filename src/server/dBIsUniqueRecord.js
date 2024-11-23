@@ -47,11 +47,23 @@ async function review(userId, collectionId, rating){
     return true;
 }
 
+async function collectionId(id){
+    const result = await db('Collections').where({ id: id }).first();
+    if (result){ return false; }
+    return true;
+}
+
 async function collection(name){
     const result = await db('Collections').where({ name: name }).first();
     if (result){ return false; }
     return true;
 }
 
-module.exports = {user, userId, flashcard, comment, collection, review};
+async function setId(id){
+    const result = await db('Sets').where({ id: id }).first();
+    if (result){ return false; }
+    return true;
+}
+
+module.exports = {user, userId, flashcard, comment, collection, review, collectionId, setId};
 

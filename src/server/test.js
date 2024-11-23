@@ -16,7 +16,28 @@ async function test() {
     console.log("--END--");
 }
 
-try{ test(); }
+function time() {
+    //* 'new Date(dateAsString)' converts string version back to original data-type
+    return (new Date()).toISOString();
+    /*
+    getFullYear(): same as human year.
+
+    getMonth(): 0-11
+
+    getDate(): 1-31
+
+    getHours(): 0-23
+
+    getMinutes(): 0-59
+
+    getSeconds(): 0-59
+    */
+}
+
+
+try{
+    console.log(time());
+}
 catch(err){
     console.log("--ERROR CAUGHT--");
     console.log(err.message);

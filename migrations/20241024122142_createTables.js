@@ -33,6 +33,8 @@ exports.up = function(knex) { return knex.schema
         table.string('description')
         table.float('averageReview');
         //^ Fully dependant on the 'Reviews' table
+        table.string('created').notNullable();
+        table.string('updated');
         //: foreign keys (links):
         table.integer('userId').notNullable(); table.foreign('userId').references('id').inTable('Users');
     }).

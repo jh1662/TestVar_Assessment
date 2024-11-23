@@ -76,9 +76,9 @@ app.delete('/api/users/:id', user.DeleteIDUser);
 //:API requests for flashcards
 app.get('/api/sets', sets.GetAllSets);
 app.post('/api/sets', sets.CreateNewSet);
-//app.get('/api/sets/:id', sets.GetIDSet);
-//app.put('/api/sets/:id', sets.PutIDSet);
-//app.delete('/api/sets/:id', sets.DeleteIDSet);
+app.get('/api/sets/:id', sets.GetIDSet);
+app.put('/api/sets/:id', sets.PutIDSet);
+app.delete('/api/sets/:id', sets.DeleteIDSet);
 //app.post('/sets/:id/comment', sets.PostIDSetComment);
 //app.get('/api/sets/:id/cards', sets.GetIDSetCards);
 //

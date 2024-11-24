@@ -1,3 +1,6 @@
+//! int validation only applies when adding that val to the database and not idetifing a record by the integer.
+//! ints for identifying records are already indirectly validated by the SQL query/finder itself.
+
 //: imports
 const rs = require('./dBIsUniqueRecord');
 //^ input database validations functions
@@ -9,6 +12,9 @@ const db = knex(config.development);
 //^ setting up another DB connection as a single connection in multi JS file disrups the connection with a runtime error
 const { parse } = require("path");
 //^ allow string to be parsed into an int
+const { comment } = require('./databaseMS');
+//? code line above is not expected
+
 
 //#region other functions
 async function checkCards(cards){
@@ -122,9 +128,52 @@ async function CreateNewSet(req,res){
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     .json({set});
 }
-async function PostIDSetComment(req,res){
-    info = {author: req.body.authorID, setId: setId, comment: req.body.comment}
-    try { await rs.userId(info.author) } catch(err){ res.status(500).json({message: err.message+" | Program error code: uploadCards-0"}); return false; }
+async function PostIDSetReview(req,res){
+    //: set-up
+    let info = {author: req.body.authorID, setId: req.params.id, comment: req.body.comment, rating: req.body.rating};
+    let check;
+
+    //: validate user's existace
+    check = rs.userId(info.author);
+    if (check == true) { res.status(500).json({message: `Error: user's id (${author}) does not exist`+" | Program error code: PostIDSetComment-0"}); return;}
+
+    //: validate id of set (to potentially save processing time)
+    check = ps.intergerable(info.setId);
+    //^ to potentially save processing time
+    if (check != "0") { res.status(422).json({message: "Error with target set's id: "+check+" | Program error code: PostIDSetComment-1"}); return;}
+    check = await rs.setId(info.setId);
+    if (check == true){ res.status(422).json({message: `Error - set with id ${info.setId} does not exist `+" | Program error code: PostIDSetComment-2"}); return; }
+
+    //: does comment already exists?
+    try { check = await db('Reviews').where({ userId: info.author }).first() } catch(err){ res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-3"}); return; }
+    if (check == true) {res.status(409).json({message: "Error as each user can only post one comment per flashcard set"+" | Program error code: PostIDSetComment-4"}); return;}
+    //^ JS conciders 'undefined' as false and any existing object as true
+    //^ respoce code '409' conflict with doing a second time (due to it already been done)
+
+    //: validates comment's content, if it exists
+    if (!(info.comment == undefined || info.comment == "")){
+        check = ps.text(info.comment);
+        if (check != "0") { res.status(422).json({message: "Error with comment's content: "+check+" | Program error code: PostIDSetComment-5"}); return;}
+    }
+    else { info.comment = null; }
+    //^ knex.js compiler cannot deal with 'undefined' without runtime error so I used 'null' instead
+
+    //: validates rating's value
+    check = ps.intergerable(info.rating)
+    if (check != "0") { res.status(422).json({message: "Error with rating value: "+check+" | Program error code: PostIDSetComment-6"}); return;}
+
+    info.created = (new Date()).toISOString();
+    //^ get current time of comment post
+    try { await db('Reviews').insert({ userId: info.author, setId: info.setId, comment: info.comment, rating: info.rating, created: info.created})} catch(err){res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-7"}); return;}
+    //^ upload review
+
+    //: update set's average rating
+    //! Needs doing
+
+    //: success
+    res.status(201)
+    .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
+    .json({message: "success"});
 }
 //#endregion
 //#region PUT requests
@@ -175,6 +224,7 @@ async function DeleteIDSet(req,res){
     if (!rs.setId(id)){ res.status(404).json({message: `Set ,by id (${id}), does not exist`+" | Program error code: DeleteIDSet-1"}); return;}
     //^ Check if requested set exists
     try{ db('Sets').select({id: id}).delete()} catch(err){ res.status(422).json({message: err.message+" | Program error code: DeleteIDSet-2"}); return; }
+    //^ delete set
 
     //: Success
     res.status(204)
@@ -184,7 +234,7 @@ async function DeleteIDSet(req,res){
 }
 //#endregion
 
-module.exports = {GetAllSets, CreateNewSet, GetIDSet, PutIDSet, DeleteIDSet};
+module.exports = {GetAllSets, CreateNewSet, GetIDSet, PutIDSet, DeleteIDSet, PostIDSetReview};
 
 /*
         //: anything empty?
@@ -204,7 +254,4 @@ async function uploadCards(cards){
         }
     };
 }
-
-
-
-            */
+*/

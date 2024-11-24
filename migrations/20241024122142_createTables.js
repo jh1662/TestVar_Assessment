@@ -56,10 +56,13 @@ exports.up = function(knex) { return knex.schema
     createTable('Reviews',function(table){
         table.increments('id').primary();
         table.integer('rating').notNullable();
+        table.text('comment');
+        table.string('created').notNullable();
         //: foreign keys (links):
         table.string('userId').notNullable(); table.foreign('userId').references('id').inTable('Users');
-        table.string('SetsId').notNullable(); table.foreign('SetsId').references('id').inTable('Sets');
+        table.string('setId').notNullable(); table.foreign('setId').references('id').inTable('Sets');
     }).
+    /*
     createTable('Comments',function(table){
         table.increments('id').primary();
         table.text('content').notNullable();
@@ -67,11 +70,12 @@ exports.up = function(knex) { return knex.schema
         table.string('userId').notNullable(); table.foreign('userId').references('id').inTable('Users');
         table.string('SetsId').notNullable(); table.foreign('SetsId').references('id').inTable('Sets');
     }).
+    */
     createTable('CollectionsToSets',function(table){
         //* Created to solely deal with a many-to-many relationship (junction table)
         table.increments('id').primary();
         //: foreign keys (links):
-        table.string('SetsId').notNullable(); table.foreign('SetsId').references('id').inTable('Sets');
+        table.string('setsId').notNullable(); table.foreign('setsId').references('id').inTable('Sets');
         table.string('collectionsId').notNullable(); table.foreign('collectionsId').references('id').inTable('Collections');
     })
     //? need to implement the 'hide card' feature

@@ -5,13 +5,15 @@ meta {
 }
 
 post {
-  url: http://localhost:3000/api/sets/1/comment
+  url: http://localhost:3000/api/sets/1/review
   body: json
   auth: none
 }
 
 body:json {
   {
-    "comment": "I love this set!"
+    "authorID": "1",
+    "comment": "",
+    "rating": "3"
   }
 }

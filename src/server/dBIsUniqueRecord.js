@@ -1,6 +1,10 @@
 const knex = require('knex');
 const config = require('../../knexfile');
 const db = knex(config.development);
+//! if return true, that means input does not exist in the table and is thus unique
+
+//! add try statements
+//! make functs first check if input is undefined
 
 async function user(username){
     const result = await db('Users').where({ username: username }).first();

@@ -79,7 +79,7 @@ app.post('/api/sets', sets.CreateNewSet);
 app.get('/api/sets/:id', sets.GetIDSet);
 app.put('/api/sets/:id', sets.PutIDSet);
 app.delete('/api/sets/:id', sets.DeleteIDSet);
-//app.post('/sets/:id/comment', sets.PostIDSetComment);
+app.post('/api/sets/:id/review', sets.PostIDSetReview);
 //app.get('/api/sets/:id/cards', sets.GetIDSetCards);
 //
 

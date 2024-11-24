@@ -23,12 +23,14 @@ async function fill() {
       { name: 'my favs', description: "I really like these set(s)", userId: 1 }
     ]);
     await db('Reviews').insert([
-      { rating: 5, userId: 3, setsId: 1 },
-      { rating: 4, userId: 2, setsId: 1 }
+      { rating: 5, userId: 3, setId: 1, created: "2024-11-24T15:27:30.153Z", comment: "YOOOOOOOOOOOOOOOOOO" },
+      { rating: 4, userId: 2, setId: 1, created: "2024-11-24T15:28:30.153Z" }
     ]);
+    /*
     await db('Comments').insert([
-      { content: "YOOOOOOOOOOOOOOOOOO", userId: 3, setsId: 1 }
+      { comment: "YOOOOOOOOOOOOOOOOOO", userId: 3, setsId: 1 }
     ]);
+    */
     await db('CollectionsToSets').insert([
       { collectionsId: 1, setsId: 1 }
     ]);

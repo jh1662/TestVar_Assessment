@@ -8,10 +8,11 @@ const db = knex(config.development);
 
 //#region GET requests
 async function GetAllUsersDetails(req,res){
+    //* no req body and no req params
     let result;
-    try{ result = await db('Users').select('id', 'username', 'admin', 'dailySets'); }
+    //^ Set-up
+    try{ result = await db('Users').select('id', 'username', 'admin', 'dailySets'); } catch(err){ res.status(500).json({message: err.message}); return; }
     //^ try statement to catch errors in-case connection to database is not possible
-    catch(err){ res.status(500).json({message: err.message}); return; }
     res.status(200)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     //^ This is neccessary otherwise the browser gets the "304" status for doing this before.

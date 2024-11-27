@@ -32,18 +32,22 @@ function checkInput(input, charLength){
 function name(input){ return checkInput(input, 32); };
 function text(input){ return checkInput(input, 1024); };
 //#endregion
-//#region checking integers
+//#region checking other data
 function intergerable(input){
     if ( input === undefined ){ return "Invalid - numerical input is empty (as 'undefined')" };
-    if (parseInt(input) === NaN){ return "Invalid - numerical input '${input}' is not a valid integer (as 'undefined')" };
+    if (parseInt(input) === NaN){ return `Invalid - numerical input '${input}' is not a valid integer (as 'undefined')` };
     return "0";
 }
-//#endregion
-//#region checking other data
+function booleanable(input){
+    if ( input === undefined ){ return "Invalid - boolean input (true/false) input is empty (as 'undefined')"};
+    if ( (input != "true")&&(input != "false")){ return "Invalid - boolean input must be 'true' or 'false'"};
+    //^ Didn't use a boolean parsing fucntion as JavaScript treats all kinds of data as either true of false (even undefined)
+    return "0";
+}
 
 //#endregion
 
-module.exports = {name,text,intergerable};
+module.exports = {name,text,intergerable,booleanable};
 
 /* DISABLED CODE:
 

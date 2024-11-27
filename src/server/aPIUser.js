@@ -1,3 +1,10 @@
+/*
+try { await db() } catch(err){ res.status().json({message: err.message+"  | Program error code: "}); return; }
+*/
+
+//* '.first()' cannot be chained for DBMS delete, insert, nor update but can for select
+//* dispite it looking logical to chain for all...
+
 //: imports
 const rs = require('./dBIsUniqueRecord');
 //^ input validations functions
@@ -5,8 +12,29 @@ const knex = require('knex');
 const config = require('../../knexfile');
 const db = knex(config.development);
 //^ setting up another DB connection as a single connection in multi JS file disrups the connection with a runtime error
-const ps = require('./isValidInput')
+const ps = require('./isValidInput');
 
+//#region other functions
+async function validateUser(req,res,user){
+    //* does NOT include id
+    //: validate admin power
+    if(user.admin === undefined){ res.status(422).json({message: "did not specify if user should be admin or not"+"  | Program error code: PostNewUser-1"}); return; }
+    if( (user.admin !== true)&&(user.admin !== false) ){ res.status(422).json({message: "admin powers should be either true or false; neither was detected"+"  | Program error code: PostNewUser-2"}); return; }
+
+    //: validate username
+    check = ps.name(user.username)
+    if (check != "0") { res.status(422).json({message: `no valid 'username' value in request's body: `+check+"  | Program error code: PostNewUser-3"}); return; }
+
+    //: validate password
+    check = ps.name(user.password)
+    if (check != "0") { res.status(422).json({message: `no valid 'password' value in request's body: `+check+"  | Program error code: PostNewUser-4"}); return; }
+
+    //: check if unique fields are unique
+    try{ check = await rs.user(user.username) } catch(err){ res.status(500).json({message: err.message+"  | Program error code: PostNewUser-5"}); return; }
+    if (!check){ res.status(429).json({message: "User (by username) already exists"+"  | Program error code: PostNewUser-6"}); return; }
+    //^ username has to be unique
+}
+//#endregion
 //#region GET requests
 async function GetAllUsersDetails(req,res){
     //* no req body and no req params
@@ -14,6 +42,7 @@ async function GetAllUsersDetails(req,res){
     //^ Set-up
     try{ result = await db('Users').select('id', 'username', 'admin', 'dailySets'); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: GetIDUserDetails"}); return; }
     //^ try statement to catch errors in-case connection to database is not possible
+    //: success
     res.status(200)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     //^ This is neccessary otherwise the browser gets the "304" status for doing this before.
@@ -25,14 +54,15 @@ async function GetIDUserDetails(req,res){
     //^ gets the varible's value from the URL
     let result; let check;
 
-    //: validation
+    //* validation
     //: validates id's format
     check = ps.intergerable(id)
     if (check != "0") { res.status(422).json({message: "no valid 'id' value in request's body: "+check+"  | Program error code: GetIDUserDetails-0"}); return; }
+
     //: validates if user exist
-    check = rs.userId(id)
-    if (check) { res.status(422).json({message: `no such user with id ${id} exists`+"  | Program error code: GetIDUserDetails-1"}); return; }
-    
+    check = await rs.userId(id)
+    if (check) { res.status(422).json({message: `no such user with id '${id}' exists`+"  | Program error code: GetIDUserDetails-1"}); return; }
+
     try{ result = await db('Users').where({ id: id }).select('id', 'username', 'admin', 'dailySets').first(); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: GetIDUserDetails-2"}); return; }
     //^ get user's datails
     //: success
@@ -47,34 +77,15 @@ async function PostNewUser(req,res){
     const user = {/*id: req.body.id,*/ username: req.body.username, password: req.body.password, admin: req.body.admin};
     let result; let check;
 
-    //* validatation of new user
-    /*
-    //: validates id
-    check = ps.intergerable(user.id)
-    if (check != "0") { res.status(422).json({message: `no valid 'id' value in request's body: `+check+"  | Program error code: PostNewUser-0"}); return; }
-    */
-    //: validate username
-    check = ps.name(user.username)
-    if (check != "0") { res.status(422).json({message: `no valid 'username' value in request's body: `+check+"  | Program error code: PostNewUser-1"}); return; }
+    validateUser(req,res,user);
+    //^ validation of new user's info
 
-    //: validate password
-    check = ps.name(user.password)
-    if (check != "0") { res.status(422).json({message: `no valid 'password' value in request's body: `+check+"  | Program error code: PostNewUser-2"}); return; }
-
-    //: check if unique fields are unique
-    if (!(await rs.user(user.username))){ res.status(429).json({message: "User (by username) already exists"+"  | Program error code: PostNewUser-3"}); return; }
-    //^ id has to be unique
-    if (!(await rs.userId(user.id))){ res.status(429).json({message: "User (by id) already exists"+"  | Program error code: PostNewUser-4"}); return; }
-    //^ cant use duplicate username
-    
-    if (user.id === undefined){ await db("Users").insert({username: user.username, password: user.password, admin: user.admin, dailySets: "0"}); }
-    else { await db("Users").insert({id: user.id, username: user.username, password: user.password, admin: user.admin, dailySets: "0"}); }
-
-    try{ result = await db("Users").insert({username: user.username, password: user.password, admin: user.admin, dailySets: "0"}); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: PostNewUser-5"}); return; }
+    //: new user and prepare its details
+    try{ result = await db("Users").insert({username: user.username, password: user.password, admin: user.admin, dailySets: "0"}); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: PostNewUser-7"}); return; }
     //^ upload new user
     result = result[0];
     //^ get new user's id
-    try{ result = await db('Users').where({ username: user.username }).select('id', 'username', 'admin', 'dailySets').first(); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: PostNewUser-5"}); return; }
+    try{ result = await db('Users').where({ username: user.username }).select('id', 'username', 'admin', 'dailySets').first(); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: PostNewUser-8"}); return; }
     //^ get new user's details
 
     //: success
@@ -85,20 +96,26 @@ async function PostNewUser(req,res){
 //#endregion
 //#region PUT requests
 async function PutIDUserUpdate(req,res){
+    //: set-up
+    const user = {username: req.body.username, password: req.body.password, admin: req.body.admin};
     const id = req.params.id;
-    var result;
-    if (parseInt(id).isNaN){ res.status(404).json({message: "no valid 'id' value in request's body"}); return; }
-    try{
-        //* try statement to catch errors in-case connection to database is not possible
-        if (await rs.userId(id)){
-            res.status(404)
-            .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
-            .json({message: "User does not exist as registered"}); return;
-        }
-        await db('Users').where({ id: id }).update({username: req.body.username, password: req.body.password, admin: req.body.admin});
-        result = await db('Users').where({ id: id }).select('id', 'username', 'admin', 'dailySets').first();
-    }
-    catch (err){ res.status(404).json({message: err.message}); return; }
+    let result; let check;
+
+    //: validate id
+    check = ps.intergerable(id);
+    if (check != "0"){ res.status(422).json({message: "Error with id: "+check+" | Program error code: PutIDUserUpdate-1"}); return; }
+
+    if (await rs.userId(id)){ res.status(422).json({message: `User with id '${id}' does not exist as registered`+" | Program error code: PutIDUserUpdate-2"}); }
+    //^ check if user exists
+
+    validateUser(req,res,user);
+    //^ validation of new updated info
+
+    try { await db('Users').where({ id: id }).update({username: user.username, password: user.password, admin: user.admin}); } catch(err){ res.status(400).json({message: err.message+"  | Program error code: PutIDUserUpdate-3"}); return; }
+    //^ update user
+    try { result = await db('Users').where({ id: id }).select('id', 'username', 'admin', 'dailySets').first(); } catch(err){ res.status(500).json({message: err.message+"  | Program error code:  PutIDUserUpdate-4"}); return; }
+    //^ gets info of updated user
+    //: success
     res.status(200)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     .json(result);
@@ -129,6 +146,10 @@ async function DeleteIDUser(req,res){
 module.exports = {GetAllUsersDetails, PostNewUser, GetIDUserDetails, PutIDUserUpdate, DeleteIDUser};
 
 /*
+    check = ps.intergerable(user.id)
+    if (check != "0") { res.status(422).json({message: `no valid 'id' value in request's body: `+check+"  | Program error code: PostNewUser-0"}); return; }
+*/
+/*
     if (parseInt(id).isNaN){ res.status(404).json({message: "no valid 'id' value in request's body"}); return; }
     try{
         //* try statement to catch errors in-case connection to database is not possible
@@ -144,4 +165,13 @@ module.exports = {GetAllUsersDetails, PostNewUser, GetIDUserDetails, PutIDUserUp
         //^ Code 204 - explicitly indicates that there should be no content in the response body!
     }
     catch (err){ res.status(404).json({message: err.message}); return; }
+*/
+/*
+    try{ check = await rs.userId(user.id) } catch(err){ res.status(500).json({message: err.message+"  | Program error code: PostNewUser-6"}); return; }
+    if (!check){ res.status(429).json({message: "User (by id) already exists"+"  | Program error code: PostNewUser-7"}); return; }
+    //^ cant use duplicate id
+    try{ check = await rs.user(user.username) } catch(err){ res.status(500).json({message: err.message+"  | Program error code: PostNewUser-4"}); return; }
+
+    if (user.id === undefined){ await db("Users").insert({username: user.username, password: user.password, admin: user.admin, dailySets: "0"}); }
+    else { await db("Users").insert({id: user.id, username: user.username, password: user.password, admin: user.admin, dailySets: "0"}); }
 */

@@ -71,15 +71,14 @@ async function GetAllSets(req, res){
 async function GetIDSet(req, res){
     //: set-up
     let id = req.params.id;
-    let check;
-    let set;
+    let check; let set;
 
     //: Validate and parse id
     check = ps.intergerable(id);
-    if (check != "0") {res.status(422).json({message: "error with id: "+check+" | Program error code: GetIDSet0"}); return;}
-    id = parseInt(id)
+    if (check != "0") {res.status(422).json({message: "error with id: "+check+" | Program error code: GetIDSet-1"}); return;}
+    id = parseInt(id);
 
-    try { set = await db("Sets").where({id: id}).first()} catch(err){res.status(500).json({message: err.message+" | Program error code: GetIDSet1"}); return;}
+    try { set = await db("Sets").where({id: id}).first()} catch(err){res.status(500).json({message: err.message+" | Program error code: GetIDSet-2"}); return;}
     //^ fetch requested set if possible
     //: Success
     res.status(200)
@@ -87,7 +86,21 @@ async function GetIDSet(req, res){
     .send(set);
 }
 async function GetIDSetCards(req, res){
+    //: set up
+    let id = req.params.id;
+    let check; let result;
 
+    //: Validate and parse id
+    check = ps.intergerable(id);
+    if (check != "0") {res.status(422).json({message: "error with id: "+check+" | Program error code: GetIDSetCards-1"}); return;}
+    id = parseInt(id);
+
+    try { result = await db("Flashcards").where({setId: id})} catch(err){res.status(500).json({message: err.message+" | Program error code: GetIDSetCards-2"}); return;}
+    //^ get flashcards
+    //: Success
+    res.status(200)
+    .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
+    .send(set);
 }
 //#endregion
 //#region POST requests
@@ -221,7 +234,7 @@ async function DeleteIDSet(req,res){
     if (check != 0){ res.status(422).json({message: check+" | Program error code: DeleteIDSet-0"}); return;}
     id = parseInt(id);
 
-    if (!rs.setId(id)){ res.status(404).json({message: `Set ,by id (${id}), does not exist`+" | Program error code: DeleteIDSet-1"}); return;}
+    if (!rs.setId(id)){ res.status(404).json({message: `Set, by id (${id}), does not exist`+" | Program error code: DeleteIDSet-1"}); return;}
     //^ Check if requested set exists
     try{ db('Sets').select({id: id}).delete()} catch(err){ res.status(422).json({message: err.message+" | Program error code: DeleteIDSet-2"}); return; }
     //^ delete set
@@ -234,7 +247,7 @@ async function DeleteIDSet(req,res){
 }
 //#endregion
 
-module.exports = {GetAllSets, CreateNewSet, GetIDSet, PutIDSet, DeleteIDSet, PostIDSetReview};
+module.exports = {GetAllSets, CreateNewSet, GetIDSet, PutIDSet, DeleteIDSet, PostIDSetReview, GetIDSetCards};
 
 /*
         //: anything empty?

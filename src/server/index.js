@@ -3,11 +3,12 @@ try{
 }catch(err){console.log(err.message);}
 */
 //#region import and set-ups
-//: set up and instantiate the APIs for the API with 'knex' to use the 'SQLite3' DBMS (DataBase Management System)
+//: set up and instantiate the APIs with oher JS files
 const db = require('./databaseMS');
 const rs = require('./dBIsUniqueRecord');
 const user = require('./aPIUser');
 const sets = require('./aPISets');
+const collections = require('./aPICollections');
 
 //: set up and instantiate the API for reading from JSON files
 const fs = require('fs');
@@ -72,18 +73,38 @@ app.post('/api/users', user.PostNewUser);
 app.get('/api/users/:id', user.GetIDUserDetails);
 app.put('/api/users/:id', user.PutIDUserUpdate);
 app.delete('/api/users/:id', user.DeleteIDUser);
+app.get('/api/users', user.GetAllUsersDetails);
+app.get('/api/users/:id/sets/', user.GetUserSets);
 
-//:API requests for flashcards
+//:API requests for flashcards sets
 app.get('/api/sets', sets.GetAllSets);
 app.post('/api/sets', sets.CreateNewSet);
 app.get('/api/sets/:id', sets.GetIDSet);
 app.put('/api/sets/:id', sets.PutIDSet);
 app.delete('/api/sets/:id', sets.DeleteIDSet);
 app.post('/api/sets/:id/review', sets.PostIDSetReview);
-//app.get('/api/sets/:id/cards', sets.GetIDSetCards);
-//
+app.get('/api/sets/:id/cards', sets.GetIDSetCards);
 
+//:API requests for collections
+app.get('/api/users/:id/collections/', collections.GetAllCollectionsIDUser);
+//app.get('/api/users/:id/collections/:CId', collections.GetIDCollectionFlashcardSetsIDUser);
+//^ "CId" stands for: Collection Id
+//app.put('/api/users/:id/collections/:CId', collections.UpdateIDCollection);
+//app.delete('/api/users/:id/collections/:CId', collections.DeleteIDCollection);
+//app.get('/api/users/collections', collections.GetAllCollections);
+//app.post('/api/users/collections', collections.PostNewCollection);
+//app.get('/api/users/collections/random',collections.GetRandomCollection);
 
+/* //! Unpredictable error
+node:_http_outgoing:696 throw new ERR_HTTP_HEADERS_SENT('set'); ^ Error [ERR_HTTP_HEADERS_SENT]:
+Cannot set headers after they are sent to the client at ServerResponse.setHeader (node:_http_outgoing:696:11)
+at ServerResponse.header (C:\Users\Emperor Haddad\TestVar_Assessment\node_modules\express\lib\response.js:794:10)
+at ServerResponse.send (C:\Users\Emperor Haddad\TestVar_Assessment\node_modules\express\lib\response.js:174:12)
+at ServerResponse.json (C:\Users\Emperor Haddad\TestVar_Assessment\node_modules\express\lib\response.js:278:15)
+at PostNewUser (C:\Users\Emperor Haddad\TestVar_Assessment\src\server\aPIUser.js:84:162)
+{ code: 'ERR_HTTP_HEADERS_SENT' }
+ Node.js v21.2.0 [nodemon] app crashed - waiting for file changes before starting...
+*/
 /* Guides used:
 > Beginner guide of Express.js: https://www.youtube.com/watch?v=-MTSQjw5DrM
 > Using specailised HMTL tags: https://www.w3schools.com/tags/tag_comment.asp

@@ -95,6 +95,9 @@ app.get('/api/users/:id/collections/', collections.GetAllCollectionsIDUser);
 //app.post('/api/users/collections', collections.PostNewCollection);
 //app.get('/api/users/collections/random',collections.GetRandomCollection);
 
+module.exports = app;
+//^ Exports all app functions for dev testing
+
 /* //! Unpredictable error
 node:_http_outgoing:696 throw new ERR_HTTP_HEADERS_SENT('set'); ^ Error [ERR_HTTP_HEADERS_SENT]:
 Cannot set headers after they are sent to the client at ServerResponse.setHeader (node:_http_outgoing:696:11)

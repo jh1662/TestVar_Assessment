@@ -5,10 +5,10 @@
   "main": "src/server/index.js",
   "scripts": {
     "dev": "nodemon src/server/index.js",
-    "tryS": "node src/server/test.js",
+    "tryS": "node src/server/experiment.js",
     "fill": "node dev/dBFiller.js",
     "reFill": "npx knex migrate:rollback && npx knex migrate:latest && npm run fill",
-    "test": "jest"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "author": "",
   "license": "ISC",
@@ -22,5 +22,8 @@
     "jest": "^29.7.0",
     "nodemon": "^3.1.7",
     "supertest": "^7.0.0"
+  },
+  "jest" : {
+    "transform" : {}
   }
 }

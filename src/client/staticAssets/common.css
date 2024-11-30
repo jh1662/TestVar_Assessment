@@ -13,6 +13,14 @@ button,a { /** Inherits from 'body'*/
   transition: background-color 0.3s; /* smooth animation of transition */
   &:hover { background-color:#da3; }
 }
+p, .data {
+  background-color: #acf;
+  border: 2px solid #da3;
+  padding: 10px; /* space from text to box */
+  margin: 10px 0; /* space between boxes */
+  border-radius: 5px; /* Rounded corners */
+}
+/*#region Style for "assets" folder*/
 nav {
   background-color:#112;
   ul {
@@ -28,3 +36,4 @@ footer {
   background-color:#112;
   text-align: center;
 }
+/*#endregion*/

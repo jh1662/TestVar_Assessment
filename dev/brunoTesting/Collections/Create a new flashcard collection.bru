@@ -1,0 +1,20 @@
+meta {
+  name: Create a new flashcard collection
+  type: http
+  seq: 7
+}
+
+post {
+  url: http://localhost:3000/api/collections
+  body: json
+  auth: none
+}
+
+body:json {
+    {
+      "authorId": "1",
+      "name": "da quiz 2.0",
+      "description": "set of 100% random questions",
+      "setsIds": ["1"]
+    }
+}

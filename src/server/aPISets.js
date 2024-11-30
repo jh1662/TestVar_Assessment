@@ -131,6 +131,7 @@ async function CreateNewSet(req,res){
     try { await db('Users').where({ id: info.author }).update({ dailySets: dailySets+1 }) } catch(err){ res.status(500).json({message: err.message+" | Program error code: CreateNewSet-6"}); return; }
     try { setsId = await db('Sets').insert({ userId: info.author, name: info.name.trim(), description: info.description.trim(), averageReview: 0, created: info.created }) } catch(err){ res.status(500).json({message: err.message+" | Program error code: CreateNewSet-7"}); return; }
     setsId = setsId[0];
+    //^ the single returned id integer is always in an array
     check = await uploadCards(cards, setsId);
     if (check != "0"){res.status(500).json({message: check+" | Program error code: CreateNewSet-8"})};
 
@@ -146,6 +147,9 @@ async function PostIDSetReview(req,res){
     let info = {author: req.body.authorID, setId: req.params.id, comment: req.body.comment, rating: req.body.rating};
     let check;
 
+    //: validate user id
+    check = ps.intergerable(info.author)
+    if (check != "0") { res.status(422).json({message: "error with user id: "+check+" | Program error code: GetAllSets"}); return; }
     //: validate user's existace
     check = rs.userId(info.author);
     if (check == true) { res.status(500).json({message: `Error: user's id (${author}) does not exist`+" | Program error code: PostIDSetComment-0"}); return;}
@@ -243,7 +247,8 @@ async function DeleteIDSet(req,res){
     res.status(204)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     .json();
-    //^ browser responce code '204' does not return json
+    //^ browser responce code '204' does not return json.
+    //^ browser responce code '204' means successful deletion per user's request
 }
 //#endregion
 

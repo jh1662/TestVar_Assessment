@@ -1,7 +1,3 @@
-/*
-try{
-}catch(err){console.log(err.message);}
-*/
 //#region import and set-ups
 //: set up and instantiate the APIs with oher JS files
 const db = require('./databaseMS');
@@ -35,24 +31,13 @@ app.set('views', path.join(__dirname, '../client/'));
 //^ tells the location of the folder of files where some are to be rendered
 //#endregion
 
-//: Corrosponds websites to URLs
-
-//: Corrosponds navigation pane's buttons to pages (GET)
-app.get('/', (req, res) => { res.render('home'); console.log("go home"); });
+//#region front-end to app (Corrosponds loading website pages to URLs)
+app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });
+//^ ideally the first the page user comes to.
+app.get('/home', (req, res) => { res.render('home'); console.log("go home"); });
 app.get('/user', (req, res) => { res.render('login'); console.log("go login"); });
-
-
-//: Corrosponds users inputs (like textboxes and buttons) to actions (POST)
-app.post('/user', (req, res) => {
-    if (res.hasOwnProperty('username') && res.hasOwnProperty('password')){
-
-    }
-    else if (res.hasOwnProperty('username') && res.hasOwnProperty('password1') && res.hasOwnProperty('password2')){
-
-    }
-});
-
-//#region API requests for API
+//#endregion
+//#region API requests for API version
 app.get('/api', async (req, res) => {
     fs.readFile(path.join(__dirname, '../client/assets/api.json'), 'utf8', (err, data) => {
         if (err) {
@@ -66,7 +51,7 @@ app.get('/api', async (req, res) => {
     });
 });
 //#endregion
-
+//#region app to api (back-end)
 //:API requests for users
 app.get('/api/users', user.GetAllUsersDetails);
 app.post('/api/users', user.PostNewUser);
@@ -87,13 +72,14 @@ app.get('/api/sets/:id/cards', sets.GetIDSetCards);
 
 //:API requests for collections
 app.get('/api/users/:id/collections/', collections.GetAllCollectionsIDUser);
-//app.get('/api/users/:id/collections/:CId', collections.GetIDCollectionFlashcardSetsIDUser);
+app.get('/api/users/:id/collections/:cId', collections.GetIDCollectionFlashcardSetsIDUser);
 //^ "CId" stands for: Collection Id
-//app.put('/api/users/:id/collections/:CId', collections.UpdateIDCollection);
-//app.delete('/api/users/:id/collections/:CId', collections.DeleteIDCollection);
-//app.get('/api/users/collections', collections.GetAllCollections);
-//app.post('/api/users/collections', collections.PostNewCollection);
-//app.get('/api/users/collections/random',collections.GetRandomCollection);
+app.put('/api/users/:id/collections/:cId', collections.UpdateIDCollection);
+app.delete('/api/users/:id/collections/:cId', collections.DeleteIDCollection);
+app.get('/api/collections', collections.GetAllCollections);
+app.post('/api/collections', collections.PostNewCollection);
+app.get('/api/collections/random',collections.GetRandomCollection);
+//#endregion
 
 module.exports = app;
 //^ Exports all app functions for dev testing
@@ -139,4 +125,11 @@ res.status(204)
     title: "ERROR", subTitle: "Code: 500",
     msg: "The API version JSON file was not found"
 };
+
+>V
+try{
+}catch(err){console.log(err.message);}
+
+>V
+res.render('index', { data: data });
 */

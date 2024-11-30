@@ -1,0 +1,19 @@
+meta {
+  name: update a flashcard set collection by ID
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:3000/api/users/1/collections/1
+  body: json
+  auth: none
+}
+
+body:json {
+    {
+      "name": "da quiz 2.0",
+      "description": "set of 100% random questions",
+      "setsIds": ["1"]
+    }
+}

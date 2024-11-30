@@ -1,0 +1,92 @@
+{"better-comments.tags": [
+    {
+        /*danger*/
+        "tag": "!",
+        "color": "Red",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": true,
+        "italic": false
+    },
+    {
+        /*confusion*/
+        "tag": "?",
+        "color": "Blue",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": true,
+        "italic": false
+    },
+    {
+        /*temperary (or region) note*/
+        "tag": "#",
+        "color": "white",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": true,
+        "italic": false
+    },
+    {
+        /*for above*/
+        "tag": "^",
+        "color": "Green",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+    },
+    {
+        /*for left*/
+        "tag": "<",
+        "color": "Cyan",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+    },
+    {
+        /*for below until blank line*/
+        "tag": ":",
+        "color": "yellow",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+    },
+    {
+        /*for below in current scope*/
+        "tag": "*",
+        "color": "orange",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+    },
+    {
+        /*disabled code*/
+        "tag": "/",
+        "color": "grey",
+        "strikethrough": true,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+    },
+    {
+        /*complementing your homies*/
+        "tag": "x",
+        "color": "pink",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+    }
+}

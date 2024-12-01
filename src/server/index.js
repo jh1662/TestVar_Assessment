@@ -15,10 +15,18 @@ const app = express();
 app.use(express.json());
 //^ instantiating this way imports the ability to parse JSONs
 const port = 3000;
-app.listen(
-    port,
-    () => console.log(`Server is up on URL: http://localhost:${port}`))
-    //^ lambda function that notify when the server is up and the URL to access it
+app.listen( port, () => console.log(`Server is up on URL: http://localhost:${port}`));
+//^ lambda function that notify when the server is up and the URL to access it
+
+//: for user login mechanics
+const LocalStrategy = require('passport-local').Strategy;
+const { initializePassport } = require('../../passportConfig');
+const passport = require('passport');
+initializePassport(passport, LocalStrategy);
+//const router = express.Router();
+const session = require('express-session');
+app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }));
+app.use(passport.initialize()); app.use(passport.session());
 
 //: the rest of the setup
 const path = require('path');
@@ -27,16 +35,10 @@ app.set('view engine', 'ejs');
 //^ instantiate 'ejs' framework in the 'express' instance to allow 'express' to render 'ejs' files as if they were HTML files (or smth like that)
 app.use(express.static(path.join(__dirname, '../client/staticAssets/')));
 //^ files to send to client no matter what user requests
-app.set('views', path.join(__dirname, '../client/'));
+app.set('views', path.join(__dirname, '../client/main/'));
 //^ tells the location of the folder of files where some are to be rendered
 //#endregion
 
-//#region front-end to app (Corrosponds loading website pages to URLs)
-app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });
-//^ ideally the first the page user comes to.
-app.get('/home', (req, res) => { res.render('home'); console.log("go home"); });
-app.get('/user', (req, res) => { res.render('login'); console.log("go login"); });
-//#endregion
 //#region API requests for API version
 app.get('/api', async (req, res) => {
     fs.readFile(path.join(__dirname, '../client/assets/api.json'), 'utf8', (err, data) => {
@@ -80,8 +82,18 @@ app.get('/api/collections', collections.GetAllCollections);
 app.post('/api/collections', collections.PostNewCollection);
 app.get('/api/collections/random',collections.GetRandomCollection);
 //#endregion
+//#region app to login mechanics
+app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), (req, res) => {
+    res.redirect('/home'); } );
+//#endregion
+//#region front-end to app (Corrosponds loading website pages to URLs)
+app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });
+//^ ideally the first the page user comes to.
+app.get('/home', (req, res) => { res.render('./others/home'); console.log("go home"); });
+app.get('/user', (req, res) => { res.render('./users/login'); console.log("go login"); });
+//#endregion
 
-module.exports = app;
+module.exports = app//, router;
 //^ Exports all app functions for dev testing
 
 /* //! Unpredictable error

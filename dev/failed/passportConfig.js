@@ -1,6 +1,6 @@
 //: imports
 const knex = require('knex');
-const config = require('./knexfile');
+const config = require('../../knexfile');
 const db = knex(config.development);
 //^ setting up another DB connection as a single connection in multi JS file disrups the connection with a runtime error
 //const usr = require('./src/server/aPIUser.js');

@@ -12,23 +12,26 @@ const fs = require('fs');
 //: instantiate the framework APIs with 'express' and others to host the website (THE ORDER MATTERS!!!)
 const express = require('express');
 const session = require('express-session');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+//const passport = require('passport');
+//const LocalStrategy = require('passport-local').Strategy;
 const path = require('path');
 const app = express();
 
 app.use(express.json());
 //^ instantiating this way imports the ability to parse JSONs
+/*
 //: setting up the "middle-ware"
-app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }));
+app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 console.log("invoke check 1");
 app.use(passport.session());
 console.log("invoke check 2");
 
+
 //: for user login mechanics
 const { initializePassport } = require('../../passportConfig');
 initializePassport(passport, LocalStrategy);
+*/
 
 //: setting up the express.js engine
 //^ allows fetching of other files
@@ -83,13 +86,20 @@ app.get('/api/collections', collections.GetAllCollections);
 app.post('/api/collections', collections.PostNewCollection);
 app.get('/api/collections/random',collections.GetRandomCollection);
 //#endregion
+
 //#region app to login mechanics
+/*
 app.post('/user/login', passport.authenticate('local', {
     //: fail
     failureRedirect: '/user' }),
     //: success
     (req, res) => {
     res.redirect('/home'); } );
+*/
+app.post('/user/login', (req, res) => {
+
+});
+
 //#endregion
 //#region front-end to app (Corrosponds loading website pages to URLs)
 app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });

@@ -6,34 +6,38 @@ const db = knex(config.development);
 //const usr = require('./src/server/aPIUser.js');
 
 function initializePassport(passport, LocalStrategy) {
+    console.log("gonna login (initializePassport)");
     passport.use(new LocalStrategy(
         //* check if user can log in with provided details
         async (username, password, done) => {
+            console.log("trying to login (LocalStrategy)");
             let check; let user;
             //^ set-up
             //: check username's existnce
-            try { check = db('Users').where({username: username}).first(); } catch(err) { return done(err); }
-            if (!check){ return done(null, false, { message: 'Error with login: incorrect username'+" | Program error code: initializePassport-1"}); }
+            try { check = await db('Users').where({username: username}).first(); } catch(err) { console.log("failed login - 1"); return done(err); }
+            if (!check){ console.log("failed login - 2"); return done(null, false, { message: 'Error with login: incorrect username'+" | Program error code: initializePassport-1"}); }
 
             //: checks corresponding password's existance
-            try { check = db('Users').where({username: username, password: password}).first(); } catch(err) { return done(err); }
-            if (!check){ return done(null, false, { message: 'Error with login: incorrect password'+" | Program error code: initializePassport-2"}); }
+            try { check = await db('Users').where({username: username, password: password}).first(); } catch(err) { console.log("failed login - 3"); return done(err); }
+            if (!check){ console.log("failed login - 4"); return done(null, false, { message: 'Error with login: incorrect password'+" | Program error code: initializePassport-2"}); }
 
-            try { check = db('Users').where({username: username}).select().first(); } catch(err) { return done(err); }
+            try { check = await db('Users').where({username: username}).select().first(); } catch(err) { console.log("failed login - 5"); return done(err); }
             //^ get user details
             return done(null, user);
             //^ Success.
             //^ 'null' means no error
         }
     ));
-    passport.serializeUser((username, done) => {
+    passport.serializeUser( async (username, done) => {
+        console.log("serializeUser");
         let id;
-        try { id = db('Users').where({username: username}).select('id').first(); } catch(err) { return done(err); }
+        try { id = await db('Users').where({username: username}).select('id').first(); } catch(err) { return done(err); }
         done(null, id);
     });
     passport.deserializeUser(async (id, done) => {
+        console.log("deserializeUser");
         let user;
-        try { user = db('Users').where({id: id}).select().first(); } catch(err) { return done(err); }
+        try { user = await db('Users').where({id: id}).select().first(); } catch(err) { return done(err); }
         done(null, user);
     });
 }

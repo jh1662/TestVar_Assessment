@@ -9,34 +9,35 @@ const collections = require('./aPICollections');
 //: set up and instantiate the API for reading from JSON files
 const fs = require('fs');
 
-//: set up and instantiate the REST API with 'express' to host the website
+//: instantiate the framework APIs with 'express' and others to host the website (THE ORDER MATTERS!!!)
 const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const path = require('path');
 const app = express();
+
 app.use(express.json());
 //^ instantiating this way imports the ability to parse JSONs
-const port = 3000;
-app.listen( port, () => console.log(`Server is up on URL: http://localhost:${port}`));
-//^ lambda function that notify when the server is up and the URL to access it
+//: setting up the "middle-ware"
+app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+console.log("invoke check 1");
+app.use(passport.session());
+console.log("invoke check 2");
 
 //: for user login mechanics
-const LocalStrategy = require('passport-local').Strategy;
 const { initializePassport } = require('../../passportConfig');
-const passport = require('passport');
 initializePassport(passport, LocalStrategy);
-//const router = express.Router();
-const session = require('express-session');
-app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }));
-app.use(passport.initialize()); app.use(passport.session());
 
-//: the rest of the setup
-const path = require('path');
+//: setting up the express.js engine
 //^ allows fetching of other files
 app.set('view engine', 'ejs');
 //^ instantiate 'ejs' framework in the 'express' instance to allow 'express' to render 'ejs' files as if they were HTML files (or smth like that)
-app.use(express.static(path.join(__dirname, '../client/staticAssets/')));
-//^ files to send to client no matter what user requests
 app.set('views', path.join(__dirname, '../client/main/'));
 //^ tells the location of the folder of files where some are to be rendered
+app.use(express.static(path.join(__dirname, '../client/staticAssets/')));
+//^ files to send to client no matter what user requests
 //#endregion
 
 //#region API requests for API version
@@ -83,7 +84,11 @@ app.post('/api/collections', collections.PostNewCollection);
 app.get('/api/collections/random',collections.GetRandomCollection);
 //#endregion
 //#region app to login mechanics
-app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), (req, res) => {
+app.post('/user/login', passport.authenticate('local', {
+    //: fail
+    failureRedirect: '/user' }),
+    //: success
+    (req, res) => {
     res.redirect('/home'); } );
 //#endregion
 //#region front-end to app (Corrosponds loading website pages to URLs)
@@ -93,6 +98,9 @@ app.get('/home', (req, res) => { res.render('./others/home'); console.log("go ho
 app.get('/user', (req, res) => { res.render('./users/login'); console.log("go login"); });
 //#endregion
 
+const port = 3000;
+app.listen( port, () => console.log(`Server is up on URL: http://localhost:${port}`));
+//^ lambda function that notify when the server is up and the URL to access it
 module.exports = app//, router;
 //^ Exports all app functions for dev testing
 

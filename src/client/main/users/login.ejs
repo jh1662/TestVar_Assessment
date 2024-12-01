@@ -1,7 +1,32 @@
 <%- include('../../assets/header.html') %>
 <title>Login</title>
 <script>
-
+  console.log("start script")
+  async function submit(event){
+    console.log("start function");
+    //: set-up
+    event.preventDefault();
+    //^ prevent the default form submission
+    const input = document.getElementById('form');
+    //^ get user's input
+    const data = {
+      //* user's inputs
+      username: input.username.value,
+      password: input.password.value
+    };
+    const responce = await fetch(
+      //* user's request
+      '/user/login',{
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }
+    )
+    console.log(responce);
+    console.log("end function");
+  };
+  // <form action="/user/login" method="POST" >
+  console.log("end script");
 </script>
 </header>
 <body>
@@ -10,7 +35,7 @@
   <h1>Login</h1>
   <div class="loginContainer">
     <h2>Enter credentials:</h2>
-    <form action="/user/login" method="POST" >
+    <form id="form" onsubmit="submit(event)">
       <div class="inputGroup">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>

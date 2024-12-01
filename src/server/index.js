@@ -6,7 +6,6 @@ const user = require('./aPIUser');
 const sets = require('./aPISets');
 const collections = require('./aPICollections');
 const ps = require('./isValidInput');
-const login = require('./accounts');
 
 //: set up and instantiate the API for reading from JSON files
 const fs = require('fs');

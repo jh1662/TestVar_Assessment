@@ -5,6 +5,8 @@ const rs = require('./dBIsUniqueRecord');
 const user = require('./aPIUser');
 const sets = require('./aPISets');
 const collections = require('./aPICollections');
+const ps = require('./isValidInput');
+const login = require('./accounts');
 
 //: set up and instantiate the API for reading from JSON files
 const fs = require('fs');
@@ -19,6 +21,7 @@ const app = express();
 
 app.use(express.json());
 //^ instantiating this way imports the ability to parse JSONs
+
 /*
 //: setting up the "middle-ware"
 app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
@@ -26,7 +29,6 @@ app.use(passport.initialize());
 console.log("invoke check 1");
 app.use(passport.session());
 console.log("invoke check 2");
-
 
 //: for user login mechanics
 const { initializePassport } = require('../../passportConfig');
@@ -88,6 +90,10 @@ app.get('/api/collections/random',collections.GetRandomCollection);
 //#endregion
 
 //#region app to login mechanics
+app.post('/user/login', (req, res) => {
+    if(login.login){ res.redirect('/home'); }
+    else{ res.redirect('/user'); }
+});
 /*
 app.post('/user/login', passport.authenticate('local', {
     //: fail
@@ -96,10 +102,6 @@ app.post('/user/login', passport.authenticate('local', {
     (req, res) => {
     res.redirect('/home'); } );
 */
-app.post('/user/login', (req, res) => {
-
-});
-
 //#endregion
 //#region front-end to app (Corrosponds loading website pages to URLs)
 app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });

@@ -1,11 +1,13 @@
 <%- include('../../assets/header.html') %>
 <title>Login</title>
+<script>
+
+</script>
 </header>
 <body>
   <%- include('../../assets/nav.html') %>
   <main>
   <h1>Login</h1>
-
   <div class="loginContainer">
     <h2>Enter credentials:</h2>
     <form action="/user/login" method="POST" >
@@ -19,8 +21,8 @@
       </div>
       <button type="submit">Login</button>
     </form>
+    <p><%= info %></p>
   </div>
-
   </main>
   <%- include('../../assets/footer.html') %>
 </body>

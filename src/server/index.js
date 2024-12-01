@@ -90,10 +90,12 @@ app.get('/api/collections/random',collections.GetRandomCollection);
 //#endregion
 
 //#region app to login mechanics
+/*
 app.post('/user/login', (req, res) => {
-    if(login.login){ res.redirect('/home'); }
-    else{ res.redirect('/user'); }
+    if(login.login(req,res)){ res.redirect('/home'); }
+    else{ res.redirect('/user', {info: "LOGIN FAILED"}); }
 });
+*/
 /*
 app.post('/user/login', passport.authenticate('local', {
     //: fail
@@ -107,7 +109,7 @@ app.post('/user/login', passport.authenticate('local', {
 app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });
 //^ ideally the first the page user comes to.
 app.get('/home', (req, res) => { res.render('./others/home'); console.log("go home"); });
-app.get('/user', (req, res) => { res.render('./users/login'); console.log("go login"); });
+app.get('/user', (req, res) => { res.render('./users/login',{ info: "Please log in before doing anything ('User' button in nav panel)"}) });
 //#endregion
 
 const port = 3000;

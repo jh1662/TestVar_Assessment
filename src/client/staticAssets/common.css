@@ -14,7 +14,7 @@ button,a { /** Inherits from 'body'*/
   &:hover { background-color:#da3; }
 }
 p, .data {
-  background-color: #acf;
+  color:#000; background-color: #acf;
   border: 2px solid #da3;
   padding: 10px; /* space from text to box */
   margin: 10px 0; /* space between boxes */

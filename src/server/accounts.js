@@ -14,11 +14,11 @@ async function login(req, res) {
     let check; let result;
 
     //: validate username
-    check = ps.name(user.username)
+    check = ps.name(info.username)
     if (check != "0") { res.status(422).json({message: `no valid 'username' value in request's body: `+check+"  | Program error code: login-1"}); return false; }
 
     //: validate password
-    check = ps.name(user.password)
+    check = ps.name(info.password)
     if (check != "0") { res.status(422).json({message: `no valid 'password' value in request's body: `+check+"  | Program error code: login-2"}); return false; }
 
     //: check user's existance

@@ -7,7 +7,10 @@ const db = knex(config.development);
 
 function initializePassport(passport, LocalStrategy) {
     console.log("gonna login (initializePassport)");
-    passport.use(new LocalStrategy(
+    passport.use(new LocalStrategy({
+        usernameField: 'username',
+        passwordField: 'password'
+    },
         //* check if user can log in with provided details
         async (username, password, done) => {
             console.log("trying to login (LocalStrategy)");
@@ -16,12 +19,13 @@ function initializePassport(passport, LocalStrategy) {
             //: check username's existnce
             try { check = await db('Users').where({username: username}).first(); } catch(err) { console.log("failed login - 1"); return done(err); }
             if (!check){ console.log("failed login - 2"); return done(null, false, { message: 'Error with login: incorrect username'+" | Program error code: initializePassport-1"}); }
-
+            console.log("step 1");
             //: checks corresponding password's existance
             try { check = await db('Users').where({username: username, password: password}).first(); } catch(err) { console.log("failed login - 3"); return done(err); }
             if (!check){ console.log("failed login - 4"); return done(null, false, { message: 'Error with login: incorrect password'+" | Program error code: initializePassport-2"}); }
-
+            console.log("step 2");
             try { check = await db('Users').where({username: username}).select().first(); } catch(err) { console.log("failed login - 5"); return done(err); }
+            console.log("step 3");
             //^ get user details
             return done(null, user);
             //^ Success.

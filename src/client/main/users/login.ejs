@@ -2,7 +2,7 @@
 <title>Login</title>
 <script>
   console.log("start script")
-  async function submit(event){
+  async function submitForm(event){
     console.log("start function");
     //: set-up
     event.preventDefault();
@@ -14,6 +14,7 @@
       username: input.username.value,
       password: input.password.value
     };
+    console.log(data);
     const responce = await fetch(
       //* user's request
       '/user/login',{
@@ -35,7 +36,7 @@
   <h1>Login</h1>
   <div class="loginContainer">
     <h2>Enter credentials:</h2>
-    <form id="form" onsubmit="submit(event)">
+    <form id="form" onsubmit="submitForm(event)">
       <div class="inputGroup">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>

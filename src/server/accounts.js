@@ -29,7 +29,7 @@ async function login(req, res) {
     try{ check = await db('Users').where({ username: info.username, password: info.password}).first(); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: login-4"}); return; }
     if (!check){ res.status(422).json({message: "Password does not match"+"  | Program error code: login-5"}); return; }
 
-    try{ result = await db('Users').where({ username: info.username, password: info.password}).select(id).first(); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: login-6"}); return; }
+    try{ result = await db('Users').where({ username: info.username, password: info.password}).select('id').first(); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: login-6"}); return; }
     //^ fetch user id
 
     //: success

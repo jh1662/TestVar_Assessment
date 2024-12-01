@@ -168,7 +168,7 @@ async function DeleteIDUser(req,res){
 }
 //#endregion
 
-module.exports = {GetAllUsersDetails, PostNewUser, GetIDUserDetails, PutIDUserUpdate, DeleteIDUser, GetUserSets};
+module.exports = {GetAllUsersDetails, PostNewUser, GetIDUserDetails, PutIDUserUpdate, DeleteIDUser, GetUserSets, PostLoginUser};
 
 /*
     check = ps.intergerable(user.id)

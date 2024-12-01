@@ -89,12 +89,7 @@ app.get('/api/collections/random',collections.GetRandomCollection);
 //#endregion
 
 //#region app to login mechanics
-/*
-app.post('/user/login', (req, res) => {
-    if(login.login(req,res)){ res.redirect('/home'); }
-    else{ res.redirect('/user', {info: "LOGIN FAILED"}); }
-});
-*/
+app.post('/user/login', user.PostLoginUser);
 /*
 app.post('/user/login', passport.authenticate('local', {
     //: fail

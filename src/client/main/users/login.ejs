@@ -1,6 +1,8 @@
 <%- include('../../assets/header.html') %>
 <title>Login</title>
 <script>
+  commons.test();
+
   console.log("start script")
   async function submitForm(event){
     console.log("start function");
@@ -25,6 +27,7 @@
     )
     console.log(responce);
     console.log("end function");
+
   };
   // <form action="/user/login" method="POST" >
   console.log("end script");

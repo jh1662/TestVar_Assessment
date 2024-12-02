@@ -20,19 +20,21 @@ const commons = {
         //* check if script is imported successfully (dev only)
         console.log("commonJS link/import is working");
     },
-    storeId: function(id){
-        local.storeCookie("id", id);
+    storeToken: function(id){
+        local.storeCookie("token", id);
+        console.log("token stored in cookies");
+        console.log(this.readToken());
     },
-    getId: function(){
+    readToken: function(){
         if (document.cookie == undefined){ return -1; }
         //^ no or empty cookies?
-        id = document.cookie.split('; ').find(row => row.startsWith("id=")).split('=')[1];
-        if (!id) { return -1; }
+        const id = document.cookie.split('; ').find(row => row.startsWith("token=")).split('=')[1];
+        if (!token) { return -1; }
         //^ no id found?.
         //^ existing id start from '1' so no need to worry about '0' being 'false'.
-        if (id<1) { return -1; }
+        if (token<1) { return -1; }
         //^ invalid ID
-        return id;
+        return token;
         //^ id found (success)
     },
     loginCheck: async function(){

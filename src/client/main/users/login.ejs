@@ -3,22 +3,20 @@
 <script>
   commons.test();
 
-
-  console.log("start script");
   async function submitForm(event){
-    console.log("start function");
     //: set-up
-    let response; let data; 
+    let response; let data; let status
     event.preventDefault();
     //^ prevent the default form submission
     const input = document.getElementById('form');
     //^ get user's input
+
+    //: send request and process response
     data = {
       //* user's inputs
       username: input.username.value,
       password: input.password.value
     };
-    console.log(data);
     response = await fetch(
       //* user's request
       '/user/login',{
@@ -26,14 +24,16 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       }
-    ); 
+    );
+    status = response.status;
     response = await response.json();
 
-    console.log("response: VVV");
     console.log(response);
+    console.log(status);
 
-    if(response.status == 422){ 
-      data = { info:{title: "error", subTitle: response.status, message: response.body.message}};
+    if(status == 422){
+      //* invalid login
+      data = { title: "error", subTitle: status, message: response.message };
       response = await fetch(
         '/message',{
           method: 'POST',
@@ -41,21 +41,18 @@
           body: JSON.stringify(data)
         });
       document.body.innerHTML = await response.text();
-      return; 
+      return;
     }
-    if (response.status == 201){
-      console.log("body is: VVV");
-      console.log(response.body);
-      console.log("ID is: VVV");
-      console.log(response.body.id);
-      commons.storeId(response.id);
-      //window.location.replace("/home");
-      return; 
+
+    if (status == 201){
+      //* valid login
+      console.log(response.token);
+      commons.storeToken(response.token);
+      console.log("success!");
+      return;
     }
-    console.log("end function");
   };
-  // <form action="/user/login" method="POST" >
-  console.log("end script");
+// <form action="/user/login" method="POST" >
 </script>
 </header>
 <body>
@@ -64,6 +61,7 @@
   <h1>Login</h1>
   <div class="loginContainer">
     <h2>Enter credentials:</h2>
+
     <form id="form" onsubmit="submitForm(event)">
       <div class="inputGroup">
         <label for="username">Username:</label>
@@ -75,6 +73,7 @@
       </div>
       <button type="submit">Login</button>
     </form>
+
     <p id="info">please log in</p>
   </div>
   </main>

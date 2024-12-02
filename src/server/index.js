@@ -42,6 +42,10 @@ app.set('views', path.join(__dirname, '../client/main/'));
 //^ tells the location of the folder of files where some are to be rendered
 app.use(express.static(path.join(__dirname, '../client/staticAssets/')));
 //^ files to send to client no matter what user requests
+
+//: set up, instantiate, and initialise the middleware sucurity
+const token = require('./middlewareFramework');
+token.initialise();
 //#endregion
 
 //#region API requests for API version
@@ -89,7 +93,8 @@ app.get('/api/collections/random',collections.GetRandomCollection);
 //#endregion
 
 //#region app to login mechanics
-app.post('/user/login', user.PostLoginUser);
+app.post('/user/login', user.PostUserLogin);
+app.post('/user/logout', user.DeleteUserLogout);
 /*
 app.post('/user/login', passport.authenticate('local', {
     //: fail
@@ -105,7 +110,13 @@ app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });
 app.get('/home', (req, res) => { res.render('./others/home'); console.log("go home"); });
 app.get('/user', (req, res) => { res.render('./users/login')});
 app.get('/profile', (req, res) => { res.render('./users/profile')});
-app.post('/message', (req, res) => { res.render('./others/message', {info:{title: req.body.title, subTitle: req.body.subTitle, message: req.body.message}}); console.log("go home"); });
+app.post('/message', (req, res) => { res.render('./others/message',{
+        title: req.body.title,
+        subTitle: req.body.subTitle,
+        message: req.body.message
+    });
+    console.log("go message");
+});
 //^ is POST as GET cannot have a request body
 //#endregion
 

@@ -124,8 +124,11 @@ async function PostNewUser(req,res){
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     .json(result);
 }
-async function PostLoginUser(req,res){
+async function PostUserLogin(req,res){
     login.login(req,res);
+}
+async function PostGetUserByToken(req,res){
+    login.whichUserLogin(req,res);
 }
 //#endregion
 //#region PUT requests
@@ -166,9 +169,13 @@ async function DeleteIDUser(req,res){
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     .json(result);
 }
+async function DeleteUserLogout(req,res){
+    login.dropToken(req,res);
+}
 //#endregion
 
-module.exports = {GetAllUsersDetails, PostNewUser, GetIDUserDetails, PutIDUserUpdate, DeleteIDUser, GetUserSets, PostLoginUser};
+module.exports = {GetAllUsersDetails, PostNewUser, GetIDUserDetails, PutIDUserUpdate, DeleteIDUser, GetUserSets,
+    PostUserLogin, PostGetUserByToken, DeleteUserLogout};
 
 /*
     check = ps.intergerable(user.id)

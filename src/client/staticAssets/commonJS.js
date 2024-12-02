@@ -9,7 +9,7 @@ const local = {
         document.cookie = name + "=" + value + ";" + expires + ";path=/";
     },
     noLogin: function(){
-
+        
     }
 }
 

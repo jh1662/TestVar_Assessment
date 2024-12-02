@@ -3,21 +3,23 @@
 <script>
   commons.test();
 
-  console.log("start script")
+
+  console.log("start script");
   async function submitForm(event){
     console.log("start function");
     //: set-up
+    let data; let response;
     event.preventDefault();
     //^ prevent the default form submission
     const input = document.getElementById('form');
     //^ get user's input
-    const data = {
+    data = {
       //* user's inputs
       username: input.username.value,
       password: input.password.value
     };
     console.log(data);
-    const responce = await fetch(
+    response = await fetch(
       //* user's request
       '/user/login',{
         method: 'POST',
@@ -25,9 +27,25 @@
         body: JSON.stringify(data)
       }
     )
-    console.log(responce);
-    console.log("end function");
+    console.log(response);
 
+    if(response.status == 422){ 
+      data = { info:{title: "error", subTitle: response.status, message: response.body.message}};
+      response = await fetch(
+        '/message',{
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+      document.body.innerHTML = await response.text();
+      return; 
+    }
+    if (response.status == 201){
+      window.location.replace("/home");
+      //document.body.innerHTML = await response.text();
+      return; 
+    }
+    console.log("end function");
   };
   // <form action="/user/login" method="POST" >
   console.log("end script");
@@ -50,7 +68,7 @@
       </div>
       <button type="submit">Login</button>
     </form>
-    <p><%= info %></p>
+    <p id="info">please log in</p>
   </div>
   </main>
   <%- include('../../assets/footer.html') %>

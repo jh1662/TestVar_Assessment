@@ -8,7 +8,7 @@
   async function submitForm(event){
     console.log("start function");
     //: set-up
-    let data; let response;
+    let response; let data; 
     event.preventDefault();
     //^ prevent the default form submission
     const input = document.getElementById('form');
@@ -26,7 +26,10 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       }
-    )
+    ); 
+    response = await response.json();
+
+    console.log("response: VVV");
     console.log(response);
 
     if(response.status == 422){ 
@@ -41,8 +44,12 @@
       return; 
     }
     if (response.status == 201){
-      window.location.replace("/home");
-      //document.body.innerHTML = await response.text();
+      console.log("body is: VVV");
+      console.log(response.body);
+      console.log("ID is: VVV");
+      console.log(response.body.id);
+      commons.storeId(response.id);
+      //window.location.replace("/home");
       return; 
     }
     console.log("end function");

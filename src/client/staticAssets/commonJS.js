@@ -3,13 +3,13 @@ const local = {
     storeCookie: function(name, value){
         //* stores a cookie value with semi-infinite expire date
         const expireTime = new Date();
-        date.setTime(date.getTime() + 31536000000000);
+        expireTime.setTime(expireTime.getTime() + 31536000000000);
         //^ to expire 1000 years from now (current date plus 1000 years worth of microseconds)
-        const expires = "expires=" + date.toUTCString();
+        const expires = "expires=" + expireTime.toUTCString();
         document.cookie = name + "=" + value + ";" + expires + ";path=/";
     },
     noLogin: function(){
-        
+
     }
 }
 
@@ -21,12 +21,12 @@ const commons = {
         console.log("commonJS link/import is working");
     },
     storeId: function(id){
-        storeCookie("id", id);
+        local.storeCookie("id", id);
     },
     getId: function(){
-        const id = document.cookie.match(new RegExp('(^| )' + "id" + '=([^;]+'));
-        //^ Taken from https://stackoverflow.com/questions/62590579/regex-for-cookie-matching .
-        //^ Because of the complex cookie data structure, I have to use 'regex' too keep the code as simple as possible!!!
+        if (document.cookie == undefined){ return -1; }
+        //^ no or empty cookies?
+        id = document.cookie.split('; ').find(row => row.startsWith("id=")).split('=')[1];
         if (!id) { return -1; }
         //^ no id found?.
         //^ existing id start from '1' so no need to worry about '0' being 'false'.
@@ -42,3 +42,8 @@ const commons = {
     }
 };
 
+        /*
+        const id = document.cookie.match(new RegExp('(^| )' + "id" + '=([^;]+'));
+        //^ Taken from https://stackoverflow.com/questions/62590579/regex-for-cookie-matching .
+        //^ Because of the complex cookie data structure, I have to use 'regex' too keep the code as simple as possible!!!
+        */

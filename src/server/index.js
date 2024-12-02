@@ -104,6 +104,7 @@ app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });
 //^ ideally the first the page user comes to.
 app.get('/home', (req, res) => { res.render('./others/home'); console.log("go home"); });
 app.get('/user', (req, res) => { res.render('./users/login')});
+app.get('/profile', (req, res) => { res.render('./users/profile')});
 app.post('/message', (req, res) => { res.render('./others/message', {info:{title: req.body.title, subTitle: req.body.subTitle, message: req.body.message}}); console.log("go home"); });
 //^ is POST as GET cannot have a request body
 //#endregion

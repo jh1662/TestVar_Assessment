@@ -17,15 +17,16 @@
     const userId = await commons.getUserId();
     if(userId == -1){ return; }
 
-    //: try to get user;s detail by ID
-    response = await fetch(`api/user/${userId}`,{method: 'GET'});
+    //: try to get user's detail by ID
+    console.log(`api/users/${userId}`);
+    response = await fetch(`api/users/${userId}`,{method: 'GET'});
     status = response.status
-    response = response.json();
+    response = await response.json();
 
     if(status != 201){ commons.messagePage("error logging in", status, response.message); return; }
     //^ user's detail fetch fail?
 
-    console.log("WWCD");
+    commons.messagePage("Notice!", "unimportant warning", "you are already logged in!");
   }
   async function submitForm(event){
     event.preventDefault();
@@ -53,6 +54,8 @@
     );
     status = response.status;
     response = await response.json();
+    //^ even this needs the "await" to wait for it to parse into JSON
+    //^ otherwise it will return a "promise"
 
     if(status == 422){ commons.messagePage("error logging in", status, response.message); return; }
     //^ invalid login
@@ -66,8 +69,8 @@
   };
 
   //: if user already logged in, then go to profile
-  const isLoggedIn = await commons.loginCheck();
   console.log("checking if user has logged in already");
+  const isLoggedIn = await commons.loginCheck();
   if(isLoggedIn){ console.log("User has already logged in, redirecting"); redirectToProfile(); }
   // <form action="/user/login" method="POST" >
 </script>

@@ -50,10 +50,12 @@ async function respondAuthenticate(token){
     //console.log("getting id");
     let userId;
     //^ set-up
+    console.log(token);
     try{ userId = await db('Tokens').where({token: token}).select('userId').first()} catch(err){ console.log("'respondAuthenticate' error: "+err.message); return -2;}
+    console.log(userId);
     if(!userId) { return -1; }
     //^ if token does not match a logged-in user
-    userId = userId.id
+    userId = userId.userId
     return userId;
     //^ success
 }

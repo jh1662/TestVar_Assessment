@@ -9,8 +9,10 @@ const local = {
         //^ existing id start from '1' so no need to worry about '0' being 'false'.
         if (token<1) { return -1; }
         //^ invalid ID
-        return token;
-        //^ id found (success)
+        return token+"=";
+        //^ id found (success).
+        //^ added equal symbol ('=') as decoding the "base-64" cookie remove the equal symbol as it
+        //^ treats it as padding for data integrity (see git commit hostory for more info).
     },
     storeCookie: function(name, value){
         //* stores a cookie value with semi-infinite expire date
@@ -45,6 +47,8 @@ const commons = {
         //console.log("testing");
         if(token == -1){ this.messagePage("account error", "client-side", "user has not login yet"); return -1; }
 
+        console.log(token);
+
         console.log("token before send for ID: "+token);
         response = await fetch( '/user/check',{
             //* request for user matched to token
@@ -53,12 +57,13 @@ const commons = {
             body: JSON.stringify({token: token})
         });
         status = response.status;
-        response = await response.json();
+        console.log(response.status);
 
-        //console.log("TESTING");
+        response = await response.json();
+        console.log(response);
 
         if(status != 201){ this.messagePage("Error with login session", status, response.message); return -1; }
-        if(status == 201){ return responce.userId; }
+        if(status == 201){ return response.userId; }
     },
     messagePage: async function(title, status, message){
         //* invalid login
@@ -82,6 +87,8 @@ const commons = {
             body: JSON.stringify({token: token})
         });
         const status = response.status;
+
+        console.log(status);
 
         if (status == 201){ console.log("User is logged in right now"); return true; }
 

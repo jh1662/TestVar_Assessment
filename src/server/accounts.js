@@ -64,7 +64,7 @@ async function whichUserLogin(req, res){
     //: found user id
     res.status(201)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
-    .json(userId);
+    .json({userId: userId});
 }
 async function logout(req, res, userToken){
     //* DELETE request

@@ -1,14 +1,35 @@
 <%- include('../../assets/header.html') %>
 <title>title</title>
 <script>
-    document.getElementById("profile").innerHTML = commons.getId();
+  /*
+async function callScript(){
+  //* script exists as function for allowing to stop script if needed (with 'return')
+  if(!commons.loginCheck()){ return; }
+  //^ ensure user has valid login session
+  //^ potentially saves processing time by doing it client-side here first
+  response =  await fetch();
+
+}
+await callScript();
+*/
 </script>
 </header>
 <body>
   <%- include('../../assets/nav.html') %>
   <main>
-  <h1>title</h1>
-  <p id = profile></p>
+  <h1>Hello <%= username %>!</h1>
+  <h2>profile:</h2>
+  <ul>
+    <li>Username: <%=username%></li>
+    <li>ID: <%=id%></li>
+    <li>Is admin?: <%=isAdmin%></li>
+    <li>Sets made today: <%=dailySets%>/20</li>
+  </ul>
+  <h2>actions:</h2>
+  <button onclick="funct()">Edit profile</button>
+  <button onclick="funct()">Delete account</button>
+  <button onclick="funct()">View own collections</button>
+  <button onclick="funct()">View own sets</button>
   </main>
   <%- include('../../assets/footer.html') %>
 </body>

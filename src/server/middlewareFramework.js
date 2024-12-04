@@ -47,6 +47,7 @@ async function requestAuthenticate(username,password){
 async function respondAuthenticate(token){
     //* returned positive integer (excluding 0) - user id fetched.
     //* returned positive integer (excluding 0) - one of two errors ecnounted ('-1' or '-2')
+    //console.log("getting id");
     let userId;
     //^ set-up
     try{ userId = await db('Tokens').where({token: token}).select('userId').first()} catch(err){ console.log("'respondAuthenticate' error: "+err.message); return -2;}

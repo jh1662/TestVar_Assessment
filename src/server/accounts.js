@@ -46,30 +46,33 @@ async function login(req, res) {
     //^ fetch user id
     */
 }
-async function whichUserLogin(token){
+async function whichUserLogin(req, res){
+    //: set up
     let userId;
-    //^ set up
-    if(token === undefined){ res.status(422).json({message: "error - invalid token input, input cannot be empty/undefined"}); return; }
+    const userToken = req.body.token;
+
+    if(userToken === undefined){ res.status(422).json({message: "error - invalid token input, input cannot be empty/undefined"}); return; }
     //^ validation
-    userId = await respondAuthenticate(token);
+    //console.log("finging user id for client");
+    userId = await token.respondAuthenticate(userToken);
     //^ integer above '0' for user id, negative integer if otherwise
     switch(userId){
         //* different errors
-        case -1: res.status(401).json({message: "error - invalid token may mean that user's login session has timed out"}); return;
-        case -2: res.status(500).json({message: "error - connection to database broke during operation"}); return;
+        case -1: res.status(401).json({userId: userId, message: "error - invalid token may mean that user's login session has timed out"}); return;
+        case -2: res.status(500).json({userId: userId, message: "error - connection to database broke during operation"}); return;
     }
     //: found user id
     res.status(201)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
-    .json(result);
+    .json(userId);
 }
-async function logout(token){
+async function logout(req, res, userToken){
     //* DELETE request
     let userId;
     //^ set up
-    if(token === undefined){ res.status(422).json({message: "error - invalid token input, input cannot be empty/undefined"}); return; }
+    if(userToken === undefined){ res.status(422).json({message: "error - invalid token input, input cannot be empty/undefined"}); return; }
     //^ validation
-    userId = await dropToken(token);
+    userId = await token.dropToken(userToken);
     //^ integer above '0' for user id, negative integer if otherwise
     switch(userId){
         //* different errors

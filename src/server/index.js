@@ -95,6 +95,7 @@ app.get('/api/collections/random',collections.GetRandomCollection);
 //#region app to login mechanics
 app.post('/user/login', user.PostUserLogin);
 app.post('/user/logout', user.DeleteUserLogout);
+app.post('/user/check', user.PostGetUserByToken);
 /*
 app.post('/user/login', passport.authenticate('local', {
     //: fail
@@ -109,7 +110,9 @@ app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });
 //^ ideally the first the page user comes to.
 app.get('/home', (req, res) => { res.render('./others/home'); console.log("go home"); });
 app.get('/user', (req, res) => { res.render('./users/login')});
-app.get('/profile', (req, res) => { res.render('./users/profile')});
+app.get('/user/profile', (req, res) => {
+    res.render('./users/profile', {username: profile.username, id: profile.id, isAdmin: profile.isAdmin, dailySets: profile.dailySets});
+});
 app.post('/message', (req, res) => { res.render('./others/message',{
         title: req.body.title,
         subTitle: req.body.subTitle,

@@ -1,13 +1,39 @@
 <%- include('../../assets/header.html') %>
 <title>Login</title>
-<script>
+<script type="module">
+  //^ 'type="module"' allows 'await' to be used in main body of the script.
+
   commons.test();
 
-  async function submitForm(event){
-    //: set-up
+  window.submitForm = submitForm;
+  //^ neccessary for function to be called in a "module" type JS script.
+  //^ it workes by making the function global, allowing to to be called by the HTML submit button
+
+  async function redirectToProfile(){
     let response; let data; let status
+    //^ set-up
+
+    //: try to get user's ID
+    const userId = await commons.getUserId();
+    if(userId == -1){ return; }
+
+    //: try to get user;s detail by ID
+    response = await fetch(`api/user/${userId}`,{method: 'GET'});
+    status = response.status
+    response = response.json();
+
+    if(status != 201){ commons.messagePage("error logging in", status, response.message); return; }
+    //^ user's detail fetch fail?
+
+    console.log("WWCD");
+  }
+  async function submitForm(event){
     event.preventDefault();
     //^ prevent the default form submission
+
+    //: set-up
+    let response; let data; let status
+
     const input = document.getElementById('form');
     //^ get user's input
 
@@ -18,7 +44,7 @@
       password: input.password.value
     };
     response = await fetch(
-      //* user's request
+      //* user's request to login
       '/user/login',{
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -28,31 +54,22 @@
     status = response.status;
     response = await response.json();
 
-    console.log(response);
-    console.log(status);
-
-    if(status == 422){
-      //* invalid login
-      data = { title: "error", subTitle: status, message: response.message };
-      response = await fetch(
-        '/message',{
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-      document.body.innerHTML = await response.text();
-      return;
-    }
+    if(status == 422){ commons.messagePage("error logging in", status, response.message); return; }
+    //^ invalid login
 
     if (status == 201){
       //* valid login
-      console.log(response.token);
       commons.storeToken(response.token);
-      console.log("success!");
+      window.location.href = '/home';
       return;
     }
   };
-// <form action="/user/login" method="POST" >
+
+  //: if user already logged in, then go to profile
+  const isLoggedIn = await commons.loginCheck();
+  console.log("checking if user has logged in already");
+  if(isLoggedIn){ console.log("User has already logged in, redirecting"); redirectToProfile(); }
+  // <form action="/user/login" method="POST" >
 </script>
 </header>
 <body>

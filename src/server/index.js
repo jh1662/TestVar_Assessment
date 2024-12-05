@@ -95,6 +95,60 @@ app.post('/api/collections', collections.PostNewCollection);
 app.get('/api/collections/random',collections.GetRandomCollection);
 //#endregion
 
+//#region daily refreshes
+//: generating the file location of the textfile
+let fileName = '../lastDate.txt';
+//console.log(`Absolute path: ${path.resolve(fileName)}`);
+fileName = path.join(__dirname, fileName);
+
+function isDateDifferent(date1,date2){
+    //* its own function because comparing dates except time is more complex than expected
+    if(
+        (date1.getFullYear() !== date2.getFullYear()) ||
+        (date1.getMonth() !== date2.getMonth()) ||
+        (date1.getDate() !== date2.getDate())
+    ){ return true; }
+    return false;
+}
+function isNewDate(currentDate) {
+    let lastDate;
+    //^ set-up
+
+    currentDate = new Date();
+    //: check if last date is stored, otherwise write it
+    if (!fs.existsSync(fileName)) {
+        fs.writeFileSync(fileName, currentDate.toISOString());
+        return;
+    };
+    lastDate = new Date(fs.readFileSync(fileName, 'utf8'));
+    //^ fetch the stored date
+
+    //: Compare current date to last stored date
+    if (isDateDifferent(lastDate, currentDate)) {
+        fs.writeFileSync(fileName, currentDate.toISOString());
+        return true;
+        //^ different date
+    }
+    return false;
+    //^ same date or theres no stored last date
+}
+async function dailySetsUpdate(){
+    //* reset daily sets of every user if day is different to the stored last date
+    console.log("Notice: checking if new day");
+    if (isNewDate()) {
+        await user.resetDailySets();
+        console.log("Notice: it is a new day - resetting daily sets counts");
+    }
+    else { console.log("Notice: it is not new day"); }
+}
+
+//: setting interval of checking if its a new say and resetting all daily set counts if so
+setInterval(dailySetsUpdate, 3600000);
+//^ executes subjected function once an hour
+//^ "3600000" is a hour in ms (60*60*1000)
+dailySetsUpdate()
+//^ executes now before the hour intervals
+//#endregion
 //#region app to login mechanics
 app.post('/user/login', user.PostUserLogin);
 app.post('/user/logout', user.DeleteUserLogout);

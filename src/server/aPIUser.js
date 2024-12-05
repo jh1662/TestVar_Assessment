@@ -54,6 +54,10 @@ async function validUserById(req,res,id){
     return true;
     //^ User is valid
 }
+async function resetDailySets(){
+    //* not called with express.js global arguments ("req","res") but still get called outside this file (from index.js)
+    try{ await db('Users').update({dailySets: 0}); } catch(err){ console.log({message: err.message+"  | Program error code: resetDailySets"}); return; }
+}
 //#endregion
 //#region GET requests
 async function GetAllUsersDetails(req,res){
@@ -175,7 +179,11 @@ async function DeleteUserLogout(req,res){
 //#endregion
 
 module.exports = {GetAllUsersDetails, PostNewUser, GetIDUserDetails, PutIDUserUpdate, DeleteIDUser, GetUserSets,
-    PostUserLogin, PostGetUserByToken, DeleteUserLogout};
+    //^ For the openAPI.yaml specification file from the module assignment brief
+    PostUserLogin, PostGetUserByToken, DeleteUserLogout,
+    //^ deal with user login, logout, and get user ID by login token respectfully
+    resetDailySets };
+    //^ for reseting the daily set count of every user on a daily basis
 
 /*
     check = ps.intergerable(user.id)

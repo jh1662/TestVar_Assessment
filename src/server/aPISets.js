@@ -145,7 +145,8 @@ async function CreateNewSet(req,res){
 async function PostIDSetReview(req,res){
     //: set-up
     let info = {author: req.body.authorID, setId: req.params.id, comment: req.body.comment, rating: req.body.rating};
-    let check;
+    let ratingsTotal = 0;
+    let check; let rating;
 
     //: validate user id
     check = ps.intergerable(info.author)
@@ -184,9 +185,11 @@ async function PostIDSetReview(req,res){
     try { await db('Reviews').insert({ userId: info.author, setId: info.setId, comment: info.comment, rating: info.rating, created: info.created})} catch(err){res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-7"}); return;}
     //^ upload review
 
-    //: update set's average rating
-    //! Needs doing
-
+    //: calculate and update set's new average rating
+    try { rating = await db('Reviews').where({setId: info.setId}).select('rating')} catch(err){res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-8"}); return;}
+    for(let index = 0; index < rating.length; index++){  ratingsTotal += rating[index].rating; }
+    rating = Number((ratingsTotal/rating.length).toFixed(1));
+    try { await db('Sets').where({id: info.setId}).update({averageReview: rating})} catch(err){res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-9"}); return;}
     //: success
     res.status(201)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')

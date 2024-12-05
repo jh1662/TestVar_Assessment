@@ -1,0 +1,48 @@
+<%- include('../../assets/header.html') %>
+<title>All sets</title>
+<script>
+
+</script>
+</header>
+<body>
+  <%- include('../../assets/nav.html') %>
+  <main>
+  <h1>All Sets:</h1>
+  <ul>
+    <% for (let index = 0; index < sets.length; index++) { %>
+      <% //: convert SQL boolean to "Yes" or "No"
+        const humanReadableFormat = {
+          //* configuration for what the human-readable time will look like
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        };
+        //: convert date/times string to a more human-readable verison (if not null)
+        sets[index].created = new Date(sets[index].created)
+        sets[index].created = sets[index].created.toLocaleString('en-GB', humanReadableFormat);
+        if(sets[index].updated === null){ sets[index].updated = "Haven't been updated yet" }
+        else{
+          sets[index].updated = new Date(sets[index].created)
+          sets[index].updated = sets[index].created.toLocaleString('en-GB', humanReadableFormat);
+         }
+      %>
+      <li>
+        <ul>
+          <li>set: <%=sets[index].name%></li>
+          <li>ID: <%=sets[index].id%></li>
+          <li>Author's ID: <%=sets[index].userId%></li>
+          <li>Average rating: <%=sets[index].averageReview%></li>
+          <li>Created: <%=sets[index].created%></li>
+          <li>Updated: <%=sets[index].updated%></li>
+          <li>Description: <%=sets[index].description%></li>
+        </ul>
+      </li>
+    <% } %>
+  </ul>
+  </main>
+  <%- include('../../assets/footer.html') %>
+</body>

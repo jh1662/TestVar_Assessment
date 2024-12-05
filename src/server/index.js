@@ -109,10 +109,12 @@ app.post('/user/login', passport.authenticate('local', {
 */
 //#endregion
 //#region front-end to app (Corrosponds loading website pages to URLs)
+//#region justs renders or redirects
 app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });
 //^ ideally the first the page user comes to.
 app.get('/home', (req, res) => { res.render('./others/home'); console.log("go home"); });
 app.get('/user', (req, res) => { res.render('./users/login')});
+//#endregion
 app.get('/user/profile/:id', async (req, res) => {
     //* directly retruns responce data without parsing it hence it doesn't support ".json()"
     const userId = req.params.id;
@@ -122,13 +124,13 @@ app.get('/user/profile/:id', async (req, res) => {
     profile = profile.data;
     //^ that's how axios data structure work
     //profile = await profile.json();
-
-    if (status == 500){
-        res.render('./others/message', { title: "Error showing profile",subtitle: status, message: profile.message });
+    if (status == 201){
+        res.render('./users/profile', {username: profile.username, id: profile.id, isAdmin: profile.admin, dailySets: profile.dailySets});
         return;
     }
-    res.render('./users/profile', {username: profile.username, id: profile.id, isAdmin: profile.admin, dailySets: profile.dailySets});
+    res.render('./others/message', { title: "Error showing profile",subtitle: status, message: profile.message });
 });
+/*
 app.post('/message', (req, res) => { res.render('./others/message',{
     //* is POST as GET cannot have a request body
         title: req.body.title,
@@ -137,8 +139,28 @@ app.post('/message', (req, res) => { res.render('./others/message',{
     });
     console.log("go message");
 });
-app.get('/user/profile/:id', async (req, res) => {
+*/
+app.get('/collections/all', async (req, res) => {
+    let collections = await axios.get(`http://localhost:3000/api/collections`);
+    const status  = collections.status;
+    collections = collections.data;
 
+    if(status == 200){
+        res.render('./collections/all', {collections: collections});
+        return;
+    }
+    res.render('./others/message', { title: "Error all collections",subtitle: status, message: collections.message });
+});
+app.get('/sets/all', async (req, res) => {
+    let sets = await axios.get(`http://localhost:3000/api/sets`);
+    const status  = sets.status;
+    sets = sets.data;
+
+    if(status == 200){
+        res.render('./sets/all', {sets: sets});
+        return;
+    }
+    res.render('./others/message', { title: "Error all collections",subtitle: status, message: collections.message });
 });
 //#endregion
 
@@ -147,6 +169,8 @@ app.listen( port, () => console.log(`Server is up on URL: http://localhost:${por
 //^ lambda function that notify when the server is up and the URL to access it
 module.exports = app//, router;
 //^ Exports all app functions for dev testing
+
+//#region redundant code
 
 /* //! Unpredictable error
 node:_http_outgoing:696 throw new ERR_HTTP_HEADERS_SENT('set'); ^ Error [ERR_HTTP_HEADERS_SENT]:
@@ -197,3 +221,5 @@ try{
 >V
 res.render('index', { data: data });
 */
+
+//#endregion

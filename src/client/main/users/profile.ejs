@@ -22,7 +22,7 @@ await callScript();
   <ul>
     <li>Username: <%=username%></li>
     <li>ID: <%=id%></li>
-    <%
+    <% //: convert SQL boolean to "Yes" or "No"
     if(isAdmin == 1){ isAdmin = "Yes"; }
     else{ isAdmin = "No"; }
     %>
@@ -34,6 +34,7 @@ await callScript();
   <button onclick="funct()">Delete account</button>
   <button onclick="funct()">View own collections</button>
   <button onclick="funct()">View own sets</button>
+  <button onclick="funct()">Admin panel</button>
   </main>
   <%- include('../../assets/footer.html') %>
 </body>

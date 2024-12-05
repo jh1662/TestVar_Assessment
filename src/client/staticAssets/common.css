@@ -10,7 +10,7 @@ button,a { /** Inherits from 'body'*/
   background-color:#112; color:#fff;
   justify-content: center;
   padding: 1rem 2rem; /* spacing between the text of each button and the edge of the nav bar */
-  transition: background-color 0.3s; /* smooth animation of transition */
+  transition: background-color 0.5s; /* smooth animation of transition */
   &:hover { background-color:#da3; }
 }
 p, .data {
@@ -20,6 +20,7 @@ p, .data {
   margin: 10px 0; /* space between boxes */
   border-radius: 5px; /* Rounded corners */
 }
+ul { list-style-type: none; } /* removes the solid circle part of the bullet points */
 /*#region Style for "assets" folder*/
 nav {
   background-color:#112;

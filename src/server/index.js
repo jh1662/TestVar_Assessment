@@ -7,8 +7,11 @@ const sets = require('./aPISets');
 const collections = require('./aPICollections');
 const ps = require('./isValidInput');
 
-//: set up and instantiate the API for reading from JSON files
 const fs = require('fs');
+//^ set up and instantiate the API for reading from JSON files
+
+const axios = require('axios');
+//^ allows server to communicate directly with the API instead of from the front-end for better coding practice sake
 
 //: instantiate the framework APIs with 'express' and others to host the website (THE ORDER MATTERS!!!)
 const express = require('express');
@@ -110,17 +113,33 @@ app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });
 //^ ideally the first the page user comes to.
 app.get('/home', (req, res) => { res.render('./others/home'); console.log("go home"); });
 app.get('/user', (req, res) => { res.render('./users/login')});
-app.get('/user/profile', (req, res) => {
-    res.render('./users/profile', {username: profile.username, id: profile.id, isAdmin: profile.isAdmin, dailySets: profile.dailySets});
+app.get('/user/profile/:id', async (req, res) => {
+    //* directly retruns responce data without parsing it hence it doesn't support ".json()"
+    const userId = req.params.id;
+    //const profile = await axios.get(`/api/users/${userId}`);
+    let profile = await axios.get(`http://localhost:3000/api/users/${userId}`);
+    const status  = profile.status;
+    profile = profile.data;
+    //^ that's how axios data structure work
+    //profile = await profile.json();
+
+    if (status == 500){
+        res.render('./others/message', { title: "Error showing profile",subtitle: status, message: profile.message });
+        return;
+    }
+    res.render('./users/profile', {username: profile.username, id: profile.id, isAdmin: profile.admin, dailySets: profile.dailySets});
 });
 app.post('/message', (req, res) => { res.render('./others/message',{
+    //* is POST as GET cannot have a request body
         title: req.body.title,
         subTitle: req.body.subTitle,
         message: req.body.message
     });
     console.log("go message");
 });
-//^ is POST as GET cannot have a request body
+app.get('/user/profile/:id', async (req, res) => {
+
+});
 //#endregion
 
 const port = 3000;

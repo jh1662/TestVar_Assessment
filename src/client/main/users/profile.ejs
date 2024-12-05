@@ -22,6 +22,10 @@ await callScript();
   <ul>
     <li>Username: <%=username%></li>
     <li>ID: <%=id%></li>
+    <%
+    if(isAdmin == 1){ isAdmin = "Yes"; }
+    else{ isAdmin = "No"; }
+    %>
     <li>Is admin?: <%=isAdmin%></li>
     <li>Sets made today: <%=dailySets%>/20</li>
   </ul>

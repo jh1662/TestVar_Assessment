@@ -2,9 +2,7 @@
 const request = require('supertest');
 const app = require('../../src/server/index');
 
-const { db, initialiseDB } = require('../dBTest/setupTestDB');
-beforeAll(async () => { await initialiseDB(); });
-afterAll(async () => {  });
+const { db, initialiseDB } = require('../dBTest/sampleDatabase');
 beforeAll(async () => { await initialiseDB(); });
 afterAll(async () => {
   clearInterval(global.dailySetsUpdate);

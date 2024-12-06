@@ -1,10 +1,17 @@
+//#region set-up
 const request = require('supertest');
 const app = require('../../src/server/index');
 
 const { db, initialiseDB } = require('../dBTest/setupTestDB');
 beforeAll(async () => { await initialiseDB(); });
-afterAll(async () => { await db.destroy(); });
-
+afterAll(async () => {  });
+beforeAll(async () => { await initialiseDB(); });
+afterAll(async () => {
+  clearInterval(global.dailySetsUpdate);
+  await db.destroy();
+  if(server) { await server.close(); }
+});
+//#endregion
 //#region GET requests
 describe('testing user.GetAllUsersDetails', () => {
     it('returns all user details', async () => {

@@ -1,7 +1,14 @@
 //* to make jest understand modern JavaScript syntax/tokens, npm script is: "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
 
 const request = require('supertest');
-const app = require('../../src/server/index');
+const {app, server} = require('../../src/server/index');
+
+beforeAll(async () => { });
+afterAll(async () => {
+  clearInterval(global.dailySetsUpdate);
+  //if(server) { server.close(); }
+  if (server && server.close) { await new Promise((resolve, reject) => { server.close((err) => { if (err) return reject(err); resolve(); }); }); console.log('Server closed.'); }
+});
 
 describe('GET /api', () => {
     //^ testing the api function (can have multiple test inside)

@@ -110,7 +110,7 @@ function isDateDifferent(date1,date2){
     ){ return true; }
     return false;
 }
-function isNewDate(currentDate) {
+function isNewDate() {
     let lastDate;
     //^ set-up
 
@@ -143,7 +143,7 @@ async function dailySetsUpdate(){
 }
 
 //: setting interval of checking if its a new say and resetting all daily set counts if so
-setInterval(dailySetsUpdate, 3600000);
+global.dailySetsUpdate = setInterval(dailySetsUpdate, 3600000);
 //^ executes subjected function once an hour
 //^ "3600000" is a hour in ms (60*60*1000)
 dailySetsUpdate()
@@ -219,9 +219,9 @@ app.get('/sets/all', async (req, res) => {
 //#endregion
 
 const port = 3000;
-app.listen( port, () => console.log(`Server is up on URL: http://localhost:${port}`));
+const server = app.listen( port, () => console.log(`Server is up on URL: http://localhost:${port}`));
 //^ lambda function that notify when the server is up and the URL to access it
-module.exports = app//, router;
+module.exports = {app, server}//, router;
 //^ Exports all app functions for dev testing
 
 //#region redundant code
@@ -245,6 +245,9 @@ at PostNewUser (C:\Users\Emperor Haddad\TestVar_Assessment\src\server\aPIUser.js
 */
 
 /* Redundant code:
+>V
+"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+
 >V
 app.use('/style.css', express.static(path.join(__dirname, 'public', 'style.css')));
 //^ Tells MIME (Multipurpose Internet Mail Extensions) that its a CSS file instead of HTML as error says: MIME type ('text/html') is not a supported stylesheet MIME type, and strict MIME checking is enabled.

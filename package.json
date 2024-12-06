@@ -8,7 +8,9 @@
     "tryS": "node src/server/experiment.js",
     "fill": "node dev/dBFiller.js",
     "reFill": "npx knex migrate:rollback && npx knex migrate:latest && npm run fill",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "jest",
+    "test:dev": "NODE_ENV=development jest --detectOpenHandles"
+
   },
   "author": "",
   "license": "ISC",

@@ -30,5 +30,3 @@ describe('GET /api', () => {
       //^ checks the whole JSON
     });
 });
-
-//#region sub-tests

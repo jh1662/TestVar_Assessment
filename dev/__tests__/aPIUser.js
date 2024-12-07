@@ -14,6 +14,7 @@ afterAll(async () => {
 describe('testing user.GetAllUsersDetails', () => {
     it('returns all user details', async () => {
       const res = await request(app).get('/api/users');
+      //^ set-up
 
       expect(res.status).toBe(200);
       expect(res.headers['content-type']).toMatch(/json/);
@@ -41,6 +42,33 @@ describe('testing user.GetAllUsersDetails', () => {
         ]
       );
     });
+});
+
+describe('testing user.GetIDUserDetails', () => {
+  it('create a user', async () => {
+    //: set-up
+    const req = {
+      //* the to-be json to be sent to the server
+      username: "johndoe",
+      admin: false,
+      password: "password"
+    }
+    const res = await request(app).post('/api/users/1').send(req).set('Accept', 'application/json');
+
+    console.log(res.body.message);
+
+    expect(res.status).toBe(201);
+    expect(res.headers['content-type']).toMatch(/json/);
+
+    expect(res.body).toEqual(
+      {
+        id: 4,
+        username: "johndoe",
+        admin: 0,
+        dailySets: 0
+      }
+    );
+  });
 });
 //#endregion
 //#region PUT requests

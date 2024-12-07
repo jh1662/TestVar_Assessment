@@ -8,14 +8,28 @@ try { await db() } catch(err){ res.status().json({message: err.message+"  | Prog
 //: imports
 const rs = require('./dBIsUniqueRecord');
 //^ input validations functions
+const env = require('./env')
+//^ determine node environment
 const knex = require('knex');
 const config = require('../../knexfile');
-const db = knex(config[process.env.NODE_ENV || 'development']);
+const db = knex(config[env.env()]);
 //^ setting up another DB connection as a single connection in multi JS file disrups the connection with a runtime error
 const ps = require('./isValidInput');
 //^ validate input data
 const login = require('./accounts');
 //^ user login mechanics
+
+//: check
+async function checkTableExists() {
+    const exists = await db.schema.hasTable('Users');
+    if (exists) { console.log('Users table exists'); }
+    else { console.log('Users table does not exist'); }
+}
+/*
+async function check() {return await db.schema.hasTable('Users');}
+console.log("does table Users exist in aPIUser jest file: VVV");
+console.log(check());
+*/
 
 //#region other functions
 async function validateUserByInfo(req,res,user){
@@ -61,10 +75,13 @@ async function resetDailySets(){
 //#endregion
 //#region GET requests
 async function GetAllUsersDetails(req,res){
+    await checkTableExists();
+
     //* no req body and no req params
     let result;
     //^ Set-up
-    try{ result = await db('Users').select('id', 'username', 'admin', 'dailySets'); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: GetIDUserDetails"}); return; }
+    console.log(env.env());
+    try{ result = await db('Users').select('id', 'username', 'admin', 'dailySets'); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: GetIDUserDetails"}); console.log(err.message); return; }
     //^ try statement to catch errors in-case connection to database is not possible
     //: success
     res.status(200)

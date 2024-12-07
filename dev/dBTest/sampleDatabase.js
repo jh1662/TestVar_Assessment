@@ -1,9 +1,19 @@
 const knex = require('knex');
-const config = require('./knexFileDev');
-const db = knex(config.test);
+const config = require('../../knexfile');
+const env = require('../../src/server/env')
+const db = knex(config[env.env()]);
+
+console.log("node environment: "+env.env());
 
 async function initialiseDB() {
     //* literally a combination of the migration and filler file but updated
+    //: drop tables
+    await db.schema.dropTableIfExists('CollectionsToSets');
+    await db.schema.dropTableIfExists('Reviews');
+    await db.schema.dropTableIfExists('Collections');
+    await db.schema.dropTableIfExists('Flashcards');
+    await db.schema.dropTableIfExists('Sets');
+    await db.schema.dropTableIfExists('Users');
     //: create the tables
     await db.schema.createTable('Users', function (table) {
         table.increments('id').primary();
@@ -72,6 +82,11 @@ async function initialiseDB() {
     await db('CollectionsToSets').insert([
         { collectionsId: 1, setsId: 1 }
     ]);
+    console.log("REFILLED THE TEST SAMPLE DATABASE!");
+    //: checking (debugging)
+    const exist = await db.schema.hasTable('Users');
+    console.log("does table Users exist in sampleDatabase.js: VVV");
+    console.log(exist);
 }
 
 module.exports = { db, initialiseDB };

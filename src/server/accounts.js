@@ -1,9 +1,11 @@
 //: imports
 const rs = require('./dBIsUniqueRecord');
 //^ input validations functions
+const env = require('./env')
+//^ determine node environment
 const knex = require('knex');
 const config = require('../../knexfile');
-const db = knex(config[process.env.NODE_ENV || 'development']);
+const db = knex(config[env.env()]);
 //^ setting up another DB connection as a single connection in multi JS file disrups the connection with a runtime error
 const ps = require('./isValidInput');
 //^ validate input data

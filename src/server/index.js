@@ -178,7 +178,7 @@ app.get('/user/profile/:id', async (req, res) => {
     profile = profile.data;
     //^ that's how axios data structure work
     //profile = await profile.json();
-    if (status == 201){
+    if (status == 200){
         res.render('./users/profile', {username: profile.username, id: profile.id, isAdmin: profile.admin, dailySets: profile.dailySets});
         return;
     }
@@ -217,7 +217,7 @@ app.get('/sets/all', async (req, res) => {
     res.render('./others/message', { title: "Error all collections",subtitle: status, message: collections.message });
 });
 app.post('/message', async (req, res) => {
-    res.render('./others/message', { title: res.body.title ,subtitle: res.body.subTitle, message: res.body.message });
+    res.render('./others/message', { title: req.body.title ,subTitle: req.body.subTitle, message: req.body.message });
 });
 //#endregion
 

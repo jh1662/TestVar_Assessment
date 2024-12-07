@@ -1,6 +1,6 @@
 //#region set-up
 const request = require('supertest');
-const app = require('../../src/server/index');
+const {app, server} = require('../../src/server/index');
 
 const { db, initialiseDB } = require('../dBTest/sampleDatabase');
 beforeAll(async () => { await initialiseDB(); });

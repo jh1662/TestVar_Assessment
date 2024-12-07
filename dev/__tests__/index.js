@@ -4,9 +4,11 @@
 const request = require('supertest');
 const {app, server} = require('../../src/server/index');
 
-beforeAll(async () => { });
+const { db, initialiseDB } = require('../dBTest/sampleDatabase');
+beforeAll(async () => { await initialiseDB(); });
 afterAll(async () => {
   clearInterval(global.dailySetsUpdate);
+  await db.destroy();
   if(server) { await server.close(); }
 });
 

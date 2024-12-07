@@ -19,17 +19,24 @@ const ps = require('./isValidInput');
 const login = require('./accounts');
 //^ user login mechanics
 
+/*
 //: check
 async function checkTableExists() {
     const exists = await db.schema.hasTable('Users');
-    if (exists) { console.log('Users table exists'); }
+    if (exists) { console.log('Users table exists');
+        const data = await db('Users').select('*')
+        //^ knex does not require '*' but jest does
+        console.log(data);
+    }
     else { console.log('Users table does not exist'); }
 }
+*/
 /*
 async function check() {return await db.schema.hasTable('Users');}
 console.log("does table Users exist in aPIUser jest file: VVV");
 console.log(check());
 */
+//console.log(err.message);
 
 //#region other functions
 async function validateUserByInfo(req,res,user){
@@ -41,11 +48,11 @@ async function validateUserByInfo(req,res,user){
 
     //: validate username
     check = ps.name(user.username)
-    if (check != "0") { res.status(422).json({message: `no valid 'username' value in request's body: `+check+"  | Program error code: validateUserByInfo-3"}); return false; }
+    if (check != "0") { res.status(422).json({message: "no valid 'username' value in request's body: "+check+"  | Program error code: validateUserByInfo-3"}); return false; }
 
     //: validate password
     check = ps.name(user.password)
-    if (check != "0") { res.status(422).json({message: `no valid 'password' value in request's body: `+check+"  | Program error code: validateUserByInfo-4"}); return false; }
+    if (check != "0") { res.status(422).json({message: "no valid 'password' value in request's body: "+check+"  | Program error code: validateUserByInfo-4"}); return false; }
 
     //: check if unique fields are unique
     try{ check = await rs.user(user.username) } catch(err){ res.status(500).json({message: err.message+"  | Program error code: validateUserByInfo-5"}); return false; }
@@ -75,13 +82,13 @@ async function resetDailySets(){
 //#endregion
 //#region GET requests
 async function GetAllUsersDetails(req,res){
-    await checkTableExists();
+    //await checkTableExists();
 
     //* no req body and no req params
     let result;
     //^ Set-up
     console.log(env.env());
-    try{ result = await db('Users').select('id', 'username', 'admin', 'dailySets'); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: GetIDUserDetails"}); console.log(err.message); return; }
+    try{ result = await db('Users').select('id', 'username', 'admin', 'dailySets'); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: GetIDUserDetails"}); return; }
     //^ try statement to catch errors in-case connection to database is not possible
     //: success
     res.status(200)
@@ -97,8 +104,7 @@ async function GetIDUserDetails(req,res){
 
     if ( !(await validUserById(req,res,id)) ){ return; }
     //^ validate user's id
-
-    try{ result = await db('Users').where({ id: id }).select('id', 'username', 'admin', 'dailySets').first(); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: GetIDUserDetails-2"}); return; }
+    try{ result = await db('Users').where({ id: id }).select('id', 'username', 'admin', 'dailySets').first(); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: GetIDUserDetails-2"}); console.log(err.message); return; }
     //^ get user's datails
     //: success
     res.status(201)

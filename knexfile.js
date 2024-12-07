@@ -16,10 +16,14 @@ module.exports = {
   test: {
     client: 'sqlite3',
     connection: {
-        filename: ':memory:'
+      filename: './test.sqlite3'
     },
-    useNullAsDefault: true
-}
+    useNullAsDefault: true,
+    pool: {
+      min: 0,
+      max: 10
+    },
+  }
 };
 
 /* autogen by command:

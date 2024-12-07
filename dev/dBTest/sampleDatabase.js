@@ -85,8 +85,7 @@ async function initialiseDB() {
     console.log("REFILLED THE TEST SAMPLE DATABASE!");
     //: checking (debugging)
     const exist = await db.schema.hasTable('Users');
-    console.log("does table Users exist in sampleDatabase.js: VVV");
-    console.log(exist);
+    console.log("does table Users exist in sampleDatabase.js: "+ exist);
 }
 
 module.exports = { db, initialiseDB };

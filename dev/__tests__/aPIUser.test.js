@@ -48,7 +48,18 @@ describe('testing user.GetAllUsersDetails', () => {
     );
   });
 });
+describe('testing user.GetIDUserDetails', () => {
+  it('get info of the user with id of 1', async () => {
+    const res = await request(app).get('/api/users/1');
+    //^ set-up
 
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/json/);
+    expect(res.body).toEqual(
+      {  }
+    );
+  });
+});
 //#endregion
 //#region PUT requests
 
@@ -127,7 +138,7 @@ describe('testing user.GetIDUserDetails', () => {
       { message: "no valid 'password' value in request's body: Invalid - input is empty  | Program error code: validateUserByInfo-4"}
     );
   });
-    it('create user but with username too short', async () => {
+  it('create user but with username too short', async () => {
     //: set-up
     const req = {
       //* the to-be json to be sent to the server

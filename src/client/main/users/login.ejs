@@ -20,7 +20,7 @@
     //: try to get user's detail by ID
     response = await fetch(`user/profile/${userId}`,{method: 'GET'});
     status = response.status
-    if (status == 200){ document.body.innerHTML = await response.text(); }
+    if (status == 201){ document.body.innerHTML = await response.text(); }
     //commons.messagePage("Notice!", "unimportant warning", "you are already logged in!");
   }
   async function submitForm(event){

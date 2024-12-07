@@ -107,7 +107,7 @@ async function GetIDUserDetails(req,res){
     try{ result = await db('Users').where({ id: id }).select('id', 'username', 'admin', 'dailySets').first(); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: GetIDUserDetails-2"}); console.log(err.message); return; }
     //^ get user's datails
     //: success
-    res.status(201)
+    res.status(200)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     .json(result);
 }

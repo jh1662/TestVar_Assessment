@@ -163,7 +163,7 @@ app.post('/user/login', passport.authenticate('local', {
 */
 //#endregion
 //#region front-end to app (Corrosponds loading website pages to URLs)
-//#region justs renders or redirects
+//#region just renders or redirects
 app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });
 //^ ideally the first the page user comes to.
 app.get('/home', (req, res) => { res.render('./others/home'); console.log("go home"); });
@@ -215,6 +215,9 @@ app.get('/sets/all', async (req, res) => {
         return;
     }
     res.render('./others/message', { title: "Error all collections",subtitle: status, message: collections.message });
+});
+app.post('/message', async (req, res) => {
+    res.render('./others/message', { title: res.body.title ,subtitle: res.body.subTitle, message: res.body.message });
 });
 //#endregion
 

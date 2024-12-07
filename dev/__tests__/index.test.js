@@ -9,6 +9,7 @@ afterAll(async () => {
   clearInterval(global.dailySetsUpdate);
   if(server) { await server.close(); }
 });
+
 //#endregion
 
 describe('GET /api', () => {

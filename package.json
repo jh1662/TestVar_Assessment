@@ -4,7 +4,7 @@
   "description": "My work for Assessment 1 from the Programming Framework (code: U14465) module in year 3 semester 1",
   "main": "src/server/index.js",
   "scripts": {
-    "dev": "nodemon src/server/index.js",
+    "dev": "cross-env NODE_ENV=development nodemon src/server/index.js",
     "tryS": "node src/server/experiment.js",
     "fill": "node dev/dBFiller.js",
     "reFill": "npx knex migrate:rollback && npx knex migrate:latest && npm run fill",

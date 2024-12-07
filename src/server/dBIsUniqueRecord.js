@@ -1,6 +1,6 @@
 const knex = require('knex');
 const config = require('../../knexfile');
-const db = knex(config.development);
+const db = knex(config[process.env.NODE_ENV || 'development']);
 //! if return true, that means input does not exist in the table and is thus unique
 
 //! add try statements

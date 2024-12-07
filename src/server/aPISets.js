@@ -8,7 +8,7 @@ const ps = require('./isValidInput');
 //^ input user input validations functions
 const knex = require('knex');
 const config = require('../../knexfile');
-const db = knex(config.development);
+const db = knex(config[process.env.NODE_ENV || 'development']);
 //^ setting up another DB connection as a single connection in multi JS file disrups the connection with a runtime error
 const { parse } = require("path");
 //^ allow string to be parsed into an int

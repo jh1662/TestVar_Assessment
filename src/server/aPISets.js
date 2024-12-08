@@ -261,10 +261,12 @@ async function DeleteIDSet(req,res){
     if (check != 0){ res.status(422).json({message: check+" | Program error code: DeleteIDSet-0"}); return;}
     id = parseInt(id);
 
-    if (!rs.setId(id)){ res.status(404).json({message: `Set, by id (${id}), does not exist`+" | Program error code: DeleteIDSet-1"}); return;}
+    if (await rs.setId(id)){ res.status(404).json({message: `Set, by id (${id}), does not exist`+" | Program error code: DeleteIDSet-1"}); return;}
     //^ Check if requested set exists
-    try{ db('Sets').select({id: id}).delete()} catch(err){ res.status(422).json({message: err.message+" | Program error code: DeleteIDSet-2"}); return; }
+    try{ await db('Sets').where({id: id}).delete()} catch(err){ res.status(422).json({message: err.message+" | Program error code: DeleteIDSet-2"}); return; }
     //^ delete set
+    try{ await db('Flashcards').where({setsId: id}).delete()} catch(err){ res.status(422).json({message: err.message+" | Program error code: DeleteIDSet-2"}); return; }
+    //^ delete corrosponding cards
 
     //: Success
     res.status(204)

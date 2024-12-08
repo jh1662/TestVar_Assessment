@@ -631,7 +631,7 @@ describe('testing user.PutIDUserUpdate ( PUT http://localhost:3000/api/users:id 
     );
   });
 });
-describe('testing user.DeleteIDUser ( DELETE http://localhost:3000/api/:id )', () => {
+describe('testing user.DeleteIDUser ( DELETE http://localhost:3000/api/users/:id )', () => {
   //* this resting may have more tests than other integer tests but all API functions with ID validation
   //* goes though the same function for ID validation ('validUserById(req,res,id)')
   it('delete user with ID of 2', async () => {

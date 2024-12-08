@@ -411,5 +411,49 @@ describe('testing sets.PutIDSet ( PUT http://localhost:3000/api/sets/:id )', () 
   });
   //* again, functions that are already tested have no use bding repeated
 });
-
+describe('testing user.DeleteIDSet ( DELETE http://localhost:3000/api/sets/:id )', () => {
+  //* this resting may have more tests than other integer tests but all API functions with ID validation
+  //* goes though the same function for ID validation ('validUserById(req,res,id)')
+  it('delete set with ID of 2', async () => {
+    const res = await request(app).delete('/api/sets/2');
+    //^ set-up
+    expect(res.status).toBe(204);
+    //^ no "(res.body).toEqual" check accompany because browser prevents any body data to be sent
+    //^ alongside a response with status code '204'.
+  });
+  it('attempt to delete sets with ID of 99 (ID does not exist)', async () => {
+    const res = await request(app).delete('/api/sets/99');
+    //^ set-up
+    expect(res.status).toBe(422);
+    expect(res.body).toEqual(
+      { message: "no such user with id '99' exists  | Program error code: validUserById-2" }
+    )
+  });
+  it('attempt to delete sets with ID of 0 (invalid ID)', async () => {
+    const res = await request(app).delete('/api/sets/0');
+    //^ set-up
+    expect(res.status).toBe(422);
+    expect(res.body).toEqual(
+      { message: "id '0' is below valid range (1 or above)  | Program error code: validUserById-1" }
+    )
+  });
+  it('attempt to delete sets with ID of -1 (invalid ID)', async () => {
+    const res = await request(app).delete('/api/sets/-1');
+    //^ set-up
+    expect(res.status).toBe(422);
+    expect(res.body).toEqual(
+      { message: "id '-1' is below valid range (1 or above)  | Program error code: validUserById-1" }
+    )
+  });
+  it('attempt to delete sets with ID of a random string (invalid ID)', async () => {
+    //* theres no need to make another error message from the non-existant id error message as user
+    //* can clearly see that ID is clearly not an integer in the error message.
+    const res = await request(app).delete('/api/users/1f9843qfh_==!1');
+    //^ set-up
+    expect(res.status).toBe(422);
+    expect(res.body).toEqual(
+      { message: "no such user with id '1f9843qfh_==!1' exists  | Program error code: validUserById-2" }
+    )
+  });
+});
 //#endregion

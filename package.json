@@ -9,7 +9,7 @@
     "fill": "node dev/dBFiller.js",
     "reFill": "npx knex migrate:rollback && npx knex migrate:latest && npm run fill",
     "test": "cross-env NODE_ENV=test jest --runInBand",
-    "test:dev": "cross-env NODE_ENV=development jest --detectOpenHandles",
+    "test:dev": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles",
     "test:debug": "cross-env NODE_ENV=test node --inspect-brk ./node_modules/.bin/jest --runInBand"
   },
   "author": "",

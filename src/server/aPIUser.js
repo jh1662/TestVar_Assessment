@@ -39,8 +39,24 @@ console.log(check());
 //console.log(err.message);
 
 //#region other functions
+
+async function checkUserByInfo(req,res,user){
+    //* returns true if valid, otherwise send error responce then retrun false.
+    //* includes validation.
+    //* does NOT include id
+    if (!(await validateUserByInfo(req,res,user))){ return false; }
+
+    //: check if unique fields are unique
+    try{ check = await rs.user(user.username) } catch(err){ res.status(500).json({message: err.message+"  | Program error code: validateUserByInfo-5"}); return false; }
+    if (!check){ res.status(429).json({message: "User (by username) already exists"+"  | Program error code: validateUserByInfo-6"}); return false; }
+    //^ username has to be unique
+
+    return true;
+    //^ User is valid
+}
+
 async function validateUserByInfo(req,res,user){
-    //* returns true if valid, otherwise send error responce then retrun false
+    //* returns true if valid, otherwise send error responce then retrun false.
     //* does NOT include id
     //: validate admin power
     if(user.admin === undefined){ res.status(422).json({message: "did not specify if user should be admin or not"+"  | Program error code: validateUserByInfo-1"}); return false; }
@@ -54,11 +70,6 @@ async function validateUserByInfo(req,res,user){
     check = ps.name(user.password)
     if (check != "0") { res.status(422).json({message: "no valid 'password' value in request's body: "+check+"  | Program error code: validateUserByInfo-4"}); return false; }
 
-    //: check if unique fields are unique
-    try{ check = await rs.user(user.username) } catch(err){ res.status(500).json({message: err.message+"  | Program error code: validateUserByInfo-5"}); return false; }
-    if (!check){ res.status(429).json({message: "User (by username) already exists"+"  | Program error code: validateUserByInfo-6"}); return false; }
-    //^ username has to be unique
-
     return true;
     //^ User is valid
 }
@@ -68,9 +79,11 @@ async function validUserById(req,res,id){
     check = ps.intergerable(id)
     if (check != "0") { res.status(422).json({message: "no valid 'id' value in request's body: "+check+"  | Program error code: validUserById-0"}); return false; }
 
+    if( parseInt(id)< 1 ){ res.status(422).json({message: `id '${id}' is below valid range (1 or above)`+"  | Program error code: validUserById-1"}); return false; }
+    //^ check if user id is within valid range
     //: validates if user exist
     check = await rs.userId(id)
-    if (check) { res.status(422).json({message: `no such user with id '${id}' exists`+"  | Program error code: validUserById-1"}); return false; }
+    if (check) { res.status(422).json({message: `no such user with id '${id}' exists`+"  | Program error code: validUserById-2"}); return false; }
 
     return true;
     //^ User is valid
@@ -124,7 +137,7 @@ async function GetUserSets(req,res){
     try{ result = await db('Sets').where({ userId: id }); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: GetUserSets"}); return; }
     //^ get user's datails
     //: success
-    res.status(201)
+    res.status(200)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     .send(result);
 }
@@ -135,7 +148,7 @@ async function PostNewUser(req,res){
     const user = {/*id: req.body.id,*/ username: req.body.username, password: req.body.password, admin: req.body.admin};
     let result; let check;
 
-    if( !(await validateUserByInfo(req,res,user)) ){ return; };
+    if( !(await checkUserByInfo(req,res,user)) ){ return; };
     //^ validation of new user's info
 
     //: new user and prepare its details

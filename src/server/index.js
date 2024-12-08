@@ -72,7 +72,6 @@ app.post('/api/users', user.PostNewUser);
 app.get('/api/users/:id', user.GetIDUserDetails);
 app.put('/api/users/:id', user.PutIDUserUpdate);
 app.delete('/api/users/:id', user.DeleteIDUser);
-app.get('/api/users', user.GetAllUsersDetails);
 app.get('/api/users/:id/sets/', user.GetUserSets);
 
 //:API requests for flashcards sets

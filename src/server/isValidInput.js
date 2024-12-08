@@ -34,6 +34,7 @@ function text(input){ return checkInput(input, 1024); };
 //#endregion
 //#region checking other data
 function intergerable(input){
+    if ( input === "" ){ return "Invalid - numerical input is empty string (as '')" };
     if ( input === undefined ){ return "Invalid - numerical input is empty (as 'undefined')" };
     if (parseInt(input) === NaN){ return `Invalid - numerical input '${input}' is not a valid integer (as 'undefined')` };
     return "0";

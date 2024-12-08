@@ -5,7 +5,7 @@ console.log(res.body.message);
 //#region set-up
 const request = require('supertest');
 const {app, server} = require('../../src/server/index');
-const reFill = require('../dBTest/sampleDatabase');
+const reFill = require('./sampleDatabase');
 
 beforeAll(async () => {
   console.log("start aPIUSer tests!");
@@ -62,8 +62,6 @@ describe('testing user.PostNewUser ( POST http://localhost:3000/api/users:id )',
       password: "password"
     }
     const res = await request(app).post('/api/users').send(req).set('Accept', 'application/json');
-
-    console.log(res.body.message);
 
     expect(res.status).toBe(201);
     expect(res.headers['content-type']).toMatch(/json/);
@@ -678,7 +676,7 @@ describe('testing user.DeleteIDUser ( DELETE http://localhost:3000/api/:id )', (
     )
   });
 });
-describe('testing user.GetUserSets ( GET http://localhost:3000/api/users/:id/sets/ )', () => {
+describe('testing user.GetUserSets AGAIN ( GET http://localhost:3000/api/users/:id/sets/ )', () => {
   //* the only one the depends on another database table besides the "Users" one
   it('returns all flashcard sets of user with ID of 1', async () => {
     const res = await request(app).get('/api/users/1/sets/');
@@ -732,7 +730,44 @@ describe('testing user.GetUserSets ( GET http://localhost:3000/api/users/:id/set
     );
   });
 });
+describe('testing user.GetAllUsersDetails AGAIN ( GET http://localhost:3000/api/users )', () => {
+  it('returns all user details after changes', async () => {
+    //* make sure that the current/updated data in the database is always read
+    const res = await request(app).get('/api/users');
+    //^ set-up
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/json/);
 
+    expect(res.body).toEqual(
+      [
+        {
+            "admin": 1,
+            "dailySets": 0,
+            "id": 1,
+            "username": "wickjohn"
+        },
+        {
+            "admin": 1,
+            "dailySets": 20,
+            "id": 3,
+            "username": "dripler"
+        },
+        {
+            "admin": 0,
+            "dailySets": 0,
+            "id": 4,
+            "username": "johndoe"
+        },
+        {
+            "admin": 1,
+            "dailySets": 0,
+            "id": 5,
+            "username": "theUser25"
+        }
+      ]
+    );
+  });
+});
 //#endregion
 
 /* jest request checker template:

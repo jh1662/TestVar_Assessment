@@ -3,7 +3,7 @@
 //#region set-up
 const request = require('supertest');
 const {app, server} = require('../../src/server/index');
-const reFill = require('../dBTest/sampleDatabase');
+const reFill = require('./sampleDatabase');
 
 //const { db, initialiseDB } = require('../dBTest/sampleDatabase');
 beforeAll(async () => { await reFill.initialiseDB(); });

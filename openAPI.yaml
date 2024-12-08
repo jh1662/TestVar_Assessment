@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: Backend API
-  description: "REST API for flashcards"
-  version: 0.0.1
+  title: modified flashcards API
+  description: "modified openAPI file for this assaignment"
+  version: 1.0.0
 servers:
-  - url: http://localhost:3000/api
+  - url: http://localhost:3000/
     description: Development server
 paths:
   /:
@@ -23,6 +23,14 @@ paths:
                   version:
                     type: "string"
                     example: "1.0.0"
+        "500":
+          description: "Could not get the active API version"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/FlashcardSet"
   /sets:
     get:
       summary: "Get all flashcard sets"
@@ -31,6 +39,14 @@ paths:
       responses:
         "200":
           description: "A list of flashcard sets"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/FlashcardSet"
+        "500":
+          description: "Could not get a list of flashcard sets"
           content:
             application/json:
               schema:
@@ -57,6 +73,18 @@ paths:
                 $ref: "#/components/schemas/FlashcardSet"
         "429":
           description: "You have reached the maximum number of flashcard sets allowed today"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: "could not create a flashcard set"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: "could not create a flashcard set"
           content:
             application/json:
               schema:
@@ -95,13 +123,14 @@ paths:
                               example: "I love this set!"
                             author:
                               $ref: "#/components/schemas/User"
-
-
-
-
-
-        "404":
-          description: "The flashcard set was not found"
+        "500":
+          description: "could not get a flashcard set by ID"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: "could not get a flashcard set by ID"
           content:
             application/json:
               schema:
@@ -123,8 +152,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FlashcardSet"
-        "404":
-          description: "The flashcard set was not found"
+        "422":
+          description: "could not update a flashcard set by ID"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: "could not update a flashcard set by ID"
           content:
             application/json:
               schema:
@@ -136,8 +171,14 @@ paths:
       responses:
         "204":
           description: "The flashcard set was deleted"
-        "404":
-          description: "The flashcard set was not found"
+        "500":
+          description: "could not delete a flashcard set by ID"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: "could not delete a flashcard set by ID"
           content:
             application/json:
               schema:
@@ -171,8 +212,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Comment"
-        "404":
-          description: "The flashcard set was not found"
+        "500":
+          description: "could not comment on a flashcard set"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: "could not comment on a flashcard set"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: "could not comment on a flashcard set"
           content:
             application/json:
               schema:
@@ -205,8 +258,14 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/FlashCard"
-        "404":
-          description: "The flashcard set was not found"
+        "500":
+          description: "Could not get all flashcards in a set"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: "Could not get all flashcards in a set"
           content:
             application/json:
               schema:
@@ -224,7 +283,13 @@ paths:
               schema:
                 type: "array"
                 items:
-                  $ref: "#/components/schemas/User"
+                  $ref: "#/components/schemas/UserWithId"
+        "500":
+          description: "Could not get all users"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     post:
       summary: "Create a new user"
       tags:
@@ -250,7 +315,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-        "400":
+        "422":
+          description: "The user could not be created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: "The user could not be created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
           description: "The user could not be created"
           content:
             application/json:
@@ -275,8 +352,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-        "404":
-          description: "The user was not found"
+        "500":
+          description: "could not get user"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: "could not get user"
           content:
             application/json:
               schema:
@@ -348,8 +431,14 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/FlashcardSet"
-        "404":
-          description: "The user was not found"
+        "422":
+          description: "The flashcard sets could not be retrived"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: "The flashcard sets could not be retrived"
           content:
             application/json:
               schema:
@@ -376,6 +465,18 @@ paths:
                         description: "The user's comment on the set"
                       set:
                         $ref: "#/components/schemas/FlashcardSet"
+        "500":
+          description: "could not get the flashcard set collections"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: "could not get the flashcard set collections"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /users/{userID}/collections/{collectionID}:
     parameters:
       - name: userID
@@ -407,12 +508,14 @@ paths:
                     comment:
                       type: "string"
                       description: "The user's comment on the set"
-                    set:
-                      $ref: "#/components/schemas/FlashcardSet"
-                    user:
-                      $ref: "#/components/schemas/User"
-        "404":
-          description: "The flashcard set collection was not found"
+        "500":
+          description: "can't get the flashcard set collection by ID"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: "can't get the flashcard set collection by ID"
           content:
             application/json:
               schema:
@@ -514,10 +617,18 @@ paths:
                       comment:
                         type: "string"
                         description: "The user's comment on the set"
-                      set:
-                        $ref: "#/components/schemas/FlashcardSet"
-                      user:
-                        $ref: "#/components/schemas/User"
+        "422":
+          description: "can't get all flashcard set collections"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: "can't get all flashcard set collections"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     post:
       summary: "Create a new flashcard set collection"
       tags:
@@ -574,28 +685,26 @@ paths:
               schema:
                 type: "string"
                 example: "/users/1/collections/1"
-        "404":
-          description: "There are no flashcard set collections"
+        "500":
+          description: "can't get a random flashcard set collection"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
-
 components:
   schemas:
     FlashCard:
       type: "object"
       properties:
-        question:
+        front:
           type: "string"
           example: "What is the capital of France?"
-        answer:
+        back:
           type: "string"
           example: "Paris"
         difficulty:
-          $ref: "#/components/schemas/Difficulty"
-          nullable: true
+          type: "integer"
+          example: 1
     FlashcardSet:
       type: "object"
       properties:
@@ -633,27 +742,18 @@ components:
         message:
           type: "string"
           nullable: false
-    Difficulty:
-      type: "string"
-      enum:
-        - "easy"
-        - "medium"
-        - "hard"
     User:
       type: "object"
       properties:
-        id:
-          type: "number"
-          example: 1
         username:
           type: "string"
           example: "johndoe"
         admin:
           type: "boolean"
           example: false
-          default: false
-          nullable: true
-          description: "The set creation limit should only apply to non-admin users"
+        dailySets:
+          type: "number"
+          example: 5
     Collection:
       type: "array"
       items:
@@ -680,3 +780,31 @@ components:
             author:
               $ref: "#/components/schemas/User"
               nullable: true
+    UserWithId:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          example: 1
+        username:
+          type: "string"
+          example: "johndoe"
+        admin:
+          type: "boolean"
+          example: false
+        dailySets:
+          type: "number"
+          example: 5
+
+    UserWithDailySets:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          example: "johndoe"
+        admin:
+          type: "boolean"
+          example: false
+        dailySets:
+          type: "number"
+          example: 5

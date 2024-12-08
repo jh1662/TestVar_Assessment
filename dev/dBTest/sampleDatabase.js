@@ -68,8 +68,8 @@ async function initialiseDB() {
         { name: 'da quiz', averageReview: 4.5, userId: 1, description: "set of random questions", created: "2024-11-23T15:27:30.153Z" }
     ]);
     await db('Flashcards').insert([
-        { front: 'what is "2+2 ?', back: '4', difficulty: 1, setsId: 1 },
-        { front: 'what is "hi" spelled backwards?', back: 'ih', difficulty: 3, setsId: 1 },
+        { front: 'what is 2+2 ?', back: '4', difficulty: 1, setsId: 1 },
+        { front: 'what is hi spelled backwards?', back: 'ih', difficulty: 3, setsId: 1 },
         { front: 'If a grain of rice was shot at an initial velocity of 20 miles per hour at 5 meters high, how long until the rice hit the ground taking into account the curve of the earth but not gravity to 6 d.p.?', back: '3.457565 seconds', difficulty: 0, setsId: 1 }
     ]);
     await db('Collections').insert([

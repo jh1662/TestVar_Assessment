@@ -17,7 +17,6 @@ const { parse } = require("path");
 const { comment } = require('./databaseMS');
 //? code line above is not expected
 
-
 //#region other functions
 async function checkCards(cards){
     let check;
@@ -50,12 +49,18 @@ async function uploadCards(cards, setsId){
     return "0";
 }
 async function checkMetadata(req,res,info){
+    let check;
+    //^ set-up
     //* checks both valid format and availibility in database as a common funct for both 'CreateNewSet' and 'PutIDSet'.
     //* returns true if valid, otherwise false if unvalid (saperately sends error to client)
-    try { await rs.userId(info.author) } catch(err){ res.status(500).json({message: err.message+" | Program error code: uploadCards-0"}); return false; }
-    check = await ps.name(info.name); if ( check != "0") { res.status(422).json({message: check+" | Program error code: uploadCards-1"}); return false; }
+    check = ps.intergerable(info.author); if ( check != "0") { res.status(422).json({message: check+" | Program error code: uploadCards-1"}); return false; }
+    if (parseInt(info.author) < 0) { res.status(422).json({message: `Author ID (${info.author}) is outside valid range`+" | Program error code: uploadCards-2"}); return false; }
+    try { check = await rs.userId(info.author) } catch(err){ res.status(500).json({message: err.message+" | Program error code: uploadCards-3"}); return false; }
+    if (check) { res.status(422).json({message: "user by Id does not exist"+" | Program error code: uploadCards-4"}); return false; }
+    //^ user doesnt exist
+    check = ps.name(info.name); if ( check != "0") { res.status(422).json({message: check+" | Program error code: uploadCards-5"}); return false; }
     //^ responce code '422' means understandable but inappropiate user input
-    check = await ps.text(info.description); if ( check != "0") { res.status(422).json({message: check+" | Program error code: uploadCards-2"}); return false; }
+    check = ps.text(info.description); if ( check != "0") { res.status(422).json({message: check+" | Program error code: uploadCards-6"}); return false; }
     return true;
 }
 //#endregion
@@ -80,8 +85,11 @@ async function GetIDSet(req, res){
     if (check != "0") {res.status(422).json({message: "error with id: "+check+" | Program error code: GetIDSet-1"}); return;}
     id = parseInt(id);
 
-    try { set = await db("Sets").where({id: id}).first()} catch(err){res.status(500).json({message: err.message+" | Program error code: GetIDSet-2"}); return;}
+    if ( id < 1 ){res.status(422).json({message: `Set ,by ID ${id}, is not in valid range (one or above)`+" | Program error code: GetIDSet-2"}); return;}
+    //^ check if ID is within range
+    try { set = await db("Sets").where({id: id}).first()} catch(err){res.status(500).json({message: err.message+" | Program error code: GetIDSet-3"}); return;}
     //^ fetch requested set if possible
+    if (!set) {res.status(422).json({message: `Set ,by ID ${id}, does not exist in database`+" | Program error code: GetIDSet-4"}); return;}
     //: Success
     res.status(200)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
@@ -97,12 +105,12 @@ async function GetIDSetCards(req, res){
     if (check != "0") {res.status(422).json({message: "error with id: "+check+" | Program error code: GetIDSetCards-1"}); return;}
     id = parseInt(id);
 
-    try { result = await db("Flashcards").where({setId: id})} catch(err){res.status(500).json({message: err.message+" | Program error code: GetIDSetCards-2"}); return;}
+    try { result = await db("Flashcards").where({setsId: id})} catch(err){res.status(500).json({message: err.message+" | Program error code: GetIDSetCards-2"}); return;}
     //^ get flashcards
     //: Success
     res.status(200)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
-    .send(set);
+    .send(result);
 }
 //#endregion
 //#region POST requests
@@ -112,11 +120,11 @@ async function CreateNewSet(req,res){
     const cards = req.body.cards;
     let check; let dailySets; let setsId; let set;
 
-    if (!checkMetadata(req,res,info)){ return; }
+    if (!(await checkMetadata(req,res,info))){ return; }
     //^ DBMS and metadata validation
 
     //: User limit validation (20 sets a day or lower)
-    try { dailySets = await rs.userId(info.author) } catch(err){ res.status(500).json({message: err.message+" | Program error code: CreateNewSet-3"}); return; }
+    try { dailySets = await db('Users').where({id: info.author}).select('dailySets').first() } catch(err){ res.status(500).json({message: err.message+" | Program error code: CreateNewSet-3"}); return; }
     if (dailySets === false) { dailySets = 0; }; if (dailySets === true) { dailySets = 1; };
     //^ Knex.js semems to consider the inreger 0 and 1 as false annd true respectfully, dispite type being field datatype being integer
     if ( dailySets >= 20 ) {res.status(429).json({message: "User has already poster 20 flashcard sets today"+" | Program error code: CreateNewSet-4"}); return; }
@@ -137,12 +145,12 @@ async function CreateNewSet(req,res){
     check = await uploadCards(cards, setsId);
     if (check != "0"){res.status(500).json({message: check+" | Program error code: CreateNewSet-8"})};
 
-    try { set = await db('Sets').where({ id: setsId }) } catch(err){ res.status(500).json({message: err.message+" | Program error code: CreateNewSet-9"}); return; }
+    try { set = await db('Sets').where({ id: setsId }).first() } catch(err){ res.status(500).json({message: err.message+" | Program error code: CreateNewSet-9"}); return; }
     //^ Get the now uploaded set for responce
     //: Success
     res.status(201)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
-    .json({set});
+    .json(set);
 }
 async function PostIDSetReview(req,res){
     //: set-up
@@ -154,8 +162,8 @@ async function PostIDSetReview(req,res){
     check = ps.intergerable(info.author)
     if (check != "0") { res.status(422).json({message: "error with user id: "+check+" | Program error code: GetAllSets"}); return; }
     //: validate user's existace
-    check = rs.userId(info.author);
-    if (check == true) { res.status(500).json({message: `Error: user's id (${author}) does not exist`+" | Program error code: PostIDSetComment-0"}); return;}
+    check = await rs.userId(info.author);
+    if (check) { res.status(422).json({message: `Error: user's id (${info.author}) does not exist`+" | Program error code: PostIDSetComment-0"}); return;}
 
     //: validate id of set (to potentially save processing time)
     check = ps.intergerable(info.setId);
@@ -163,12 +171,6 @@ async function PostIDSetReview(req,res){
     if (check != "0") { res.status(422).json({message: "Error with target set's id: "+check+" | Program error code: PostIDSetComment-1"}); return;}
     check = await rs.setId(info.setId);
     if (check == true){ res.status(422).json({message: `Error - set with id ${info.setId} does not exist `+" | Program error code: PostIDSetComment-2"}); return; }
-
-    //: does comment already exists?
-    try { check = await db('Reviews').where({ userId: info.author }).first() } catch(err){ res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-3"}); return; }
-    if (check == true) {res.status(409).json({message: "Error as each user can only post one comment per flashcard set"+" | Program error code: PostIDSetComment-4"}); return;}
-    //^ JS conciders 'undefined' as false and any existing object as true
-    //^ respoce code '409' conflict with doing a second time (due to it already been done)
 
     //: validates comment's content, if it exists
     if (!(info.comment == undefined || info.comment == "")){
@@ -181,17 +183,25 @@ async function PostIDSetReview(req,res){
     //: validates rating's value
     check = ps.intergerable(info.rating)
     if (check != "0") { res.status(422).json({message: "Error with rating value: "+check+" | Program error code: PostIDSetComment-6"}); return;}
+    if ( (parseInt(info.rating) < 1) || (parseInt(info.rating) > 5)) { res.status(422).json({message: "Error with rating value: It is outside valid range (1-5)"+" | Program error code: PostIDSetComment-7"}); return;}
+
+    //: does comment already exists?
+    try { check = await db('Reviews').where({ userId: info.author }).first() } catch(err){ res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-3"}); return; }
+    if (check) {res.status(409).json({message: "Error as each user can only post one comment per flashcard set"+" | Program error code: PostIDSetComment-4"}); return;}
+    //^ JS conciders 'undefined' as false and any existing object as true
+    //^ respoce code '409' conflict with doing a second time (due to it already been done)
 
     info.created = (new Date()).toISOString();
     //^ get current time of comment post
-    try { await db('Reviews').insert({ userId: info.author, setId: info.setId, comment: info.comment, rating: info.rating, created: info.created})} catch(err){res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-7"}); return;}
+    try { await db('Reviews').insert({ userId: info.author, setId: info.setId, comment: info.comment, rating: info.rating, created: info.created})} catch(err){res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-8"}); return;}
     //^ upload review
 
     //: calculate and update set's new average rating
-    try { rating = await db('Reviews').where({setId: info.setId}).select('rating')} catch(err){res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-8"}); return;}
+    try { rating = await db('Reviews').where({setId: info.setId}).select('rating')} catch(err){res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-9"}); return;}
     for(let index = 0; index < rating.length; index++){  ratingsTotal += rating[index].rating; }
     rating = Number((ratingsTotal/rating.length).toFixed(1));
-    try { await db('Sets').where({id: info.setId}).update({averageReview: rating})} catch(err){res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-9"}); return;}
+    try { await db('Sets').where({id: info.setId}).update({averageReview: rating})} catch(err){res.status(500).json({message: err.message+" | Program error code: PostIDSetComment-10"}); return;}
+
     //: success
     res.status(201)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
@@ -210,8 +220,16 @@ async function PutIDSet(req,res){
     //^ DBMS and metadata validation
 
     //: validate the cards
-    check = checkCards(cards)
-    if (check == "0"){ res.status(422).json({message: check+" | Program error code: PutIDSet-0"}); return; }
+    check = await checkCards(cards);
+    if (check != "0"){ res.status(422).json({message: check+" | Program error code: PutIDSet-0"}); return; }
+
+    //: is set id valid?
+    check = ps.intergerable(setsId);
+    if (check != "0"){ res.status(422).json({message: check+" | Program error code: PutIDSet-0.1"}); return; }
+
+    //: does the set exist?
+    check = await rs.setId(setsId);
+    if (check){ res.status(422).json({message: "set does not exist"+" | Program error code: PutIDSet-0.2"}); return; }
 
     info.updated = (new Date()).toISOString();
     //^ Create and add the set's updated date and time
@@ -224,12 +242,12 @@ async function PutIDSet(req,res){
     check = await uploadCards(cards, setsId)
     if (check != "0"){res.status(500).json({message: check+" | Program error code: PutIDSet-3"})};
 
-    try { set = await db('Sets').where({ id: setsId }) } catch(err){ res.status(500).json({message: err.message+" | Program error code: PutIDSet-4"}); return; }
+    try { set = await db('Sets').where({ id: setsId }).first() } catch(err){ res.status(500).json({message: err.message+" | Program error code: PutIDSet-4"}); return; }
     //^ Get the now uploaded set for responce
     //: Success
-    res.status(200)
+    res.status(201)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
-    .json({set});
+    .json(set);
 }
 //#endregion
 //#region DELETE requests
@@ -277,4 +295,9 @@ async function uploadCards(cards){
         }
     };
 }
+*/
+
+/*
+    if (!set) {res.status(422).json({message: `Set ,by ID ${id}, does not exist in database`+" | Program error code: ?-"}); return;}
+    if ( id < 1 ){res.status(422).json({message: `Set ,by ID ${id}, is not in valid range (one or above)`+" | Program error code: ?-"}); return;}
 */

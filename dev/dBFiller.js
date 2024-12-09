@@ -42,7 +42,15 @@ async function fill() {
   }
 }
 
+async function main(){
+  await fill();
+  await db.destroy();
+}
+main();
+
+/*
 fill();
-//db.destroy();
+await db.destroy();
 //^ causes the error with message "aborted"
 //^ doesn't matter much as it timesout (without error) after a little while
+*/

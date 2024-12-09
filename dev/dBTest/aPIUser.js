@@ -5,7 +5,7 @@ console.log(res.body.message);
 //#region set-up
 const request = require('supertest');
 const {app, server} = require('../../src/server/index');
-const reFill = require('./sampleDatabase');
+const reFill = require('../dBTest/sampleDatabase');
 
 beforeAll(async () => {
   console.log("start aPIUSer tests!");
@@ -770,8 +770,8 @@ describe('testing user.GetAllUsersDetails AGAIN ( GET http://localhost:3000/api/
 });
 //#endregion
 
-/* jest request checker template:
-describe('testing [aPI.requestFunction] ( [request TYPE] http://localhost:3000/[sub URL] )', () => {
+/*
+describe('testing collections.GetAllCollectionsIDUser ( GET http://localhost:3000/[sub URL] )', () => {
   it('returns all user details', async () => {
     const res = await request(app).get('[sub URL]');
     //^ set-up

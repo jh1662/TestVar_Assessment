@@ -424,25 +424,25 @@ describe('testing user.DeleteIDSet ( DELETE http://localhost:3000/api/sets/:id )
   it('attempt to delete sets with ID of 99 (ID does not exist)', async () => {
     const res = await request(app).delete('/api/sets/99');
     //^ set-up
-    expect(res.status).toBe(422);
+    expect(res.status).toBe(404);
     expect(res.body).toEqual(
-      { message: "no such user with id '99' exists  | Program error code: validUserById-2" }
+      { message: "Set, by id (99), does not exist | Program error code: DeleteIDSet-1" }
     )
   });
   it('attempt to delete sets with ID of 0 (invalid ID)', async () => {
     const res = await request(app).delete('/api/sets/0');
     //^ set-up
-    expect(res.status).toBe(422);
+    expect(res.status).toBe(404);
     expect(res.body).toEqual(
-      { message: "id '0' is below valid range (1 or above)  | Program error code: validUserById-1" }
+      { message: "Set, by id (0), does not exist | Program error code: DeleteIDSet-1" }
     )
   });
   it('attempt to delete sets with ID of -1 (invalid ID)', async () => {
     const res = await request(app).delete('/api/sets/-1');
     //^ set-up
-    expect(res.status).toBe(422);
+    expect(res.status).toBe(404);
     expect(res.body).toEqual(
-      { message: "id '-1' is below valid range (1 or above)  | Program error code: validUserById-1" }
+      { message: "Set, by id (-1), does not exist | Program error code: DeleteIDSet-1" }
     )
   });
   it('attempt to delete sets with ID of a random string (invalid ID)', async () => {

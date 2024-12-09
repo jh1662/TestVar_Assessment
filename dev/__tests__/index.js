@@ -3,14 +3,14 @@
 //#region set-up
 const request = require('supertest');
 const {app, server} = require('../../src/server/index');
-const reFill = require('./sampleDatabase');
+const reFill = require('../dBTest/sampleDatabase');
 
 //const { db, initialiseDB } = require('../dBTest/sampleDatabase');
 beforeAll(async () => { await reFill.initialiseDB(); });
 afterAll(async () => {
-  clearInterval(global.dailySetsUpdate);
+  await clearInterval(global.dailySetsUpdate);
   await reFill.db.destroy();
-  if(server) { await server.close(); }
+  await server.close();
 });
 
 //#endregion

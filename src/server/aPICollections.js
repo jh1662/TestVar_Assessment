@@ -76,11 +76,12 @@ async function GetAllCollectionsIDUser(req,res){
     //: validate user id
     check = ps.intergerable(userId);
     if (check != "0") { res.status(422).json({message: "error with user id: "+check+" | Program error code: GetAllCollectionsIDUser-1"}); return; }
+    if (parseInt(userId) < 1) { res.status(422).json({message: `Error: user's id (${userId}) is below valid range`+" | Program error code: GetAllCollectionsIDUser-2"}); return; }
     //: Validate user
-    check = rs.userId(userId);
-    if (check == true) { res.status(500).json({message: `Error: user's id (${author}) does not exist`+" | Program error code: GetAllCollectionsIDUser-2"}); return;}
+    try { check = await db("Users").where({id: userId}).select().first(); } catch(err){ res.status(500).json({message: err.message+" | Program error code: GetAllCollectionsIDUser-3"}); return; }
+    if (!check) { res.status(404).json({message: `Error: user's id (${userId}) does not exist`+" | Program error code: GetAllCollectionsIDUser-4"}); return;}
 
-    try { result = await db("Collections").where({userId: userId}).select(); } catch(err){ res.status(500).json({message: err.message+" | Program error code: GetAllCollectionsIDUser-3"}); return; }
+    try { result = await db("Collections").where({userId: userId}).select(); } catch(err){ res.status(500).json({message: err.message+" | Program error code: GetAllCollectionsIDUser-5"}); return; }
     //^ Get all collections by subjected user
 
     //: Success
@@ -92,7 +93,8 @@ async function GetIDCollectionFlashcardSetsIDUser(req,res){
     //: setup
     let userId = req.params.id;
     let collectionId = req.params.cId;
-    let result = [];
+    let resultSets = [];
+    let result;
     let check;
 
     if ( !validateCollectionOwnership(req,res,{userId: userId, collectionId: collectionId}) ){ return; }
@@ -102,10 +104,14 @@ async function GetIDCollectionFlashcardSetsIDUser(req,res){
     //^ get all relevent set ids
     //: get all sets by id array
     for ( let index = 0; index < check.length; index++ ){
-        try { result.push(await db("Sets").where({id: check[index].setsId}).select().first()); } catch(err){ res.status(500).json({message: err.message+" | Program error code: GetIDCollectionFlashcardSetsIDUser-2"}); return; }
-        //^ 'index' goes via each collection while 'setsId' gets the id as the result is an array of objects
+        try { resultSets.push(await db("Sets").where({id: check[index].setsId}).select().first()); } catch(err){ res.status(500).json({message: err.message+" | Program error code: GetIDCollectionFlashcardSetsIDUser-2"}); return; }
+        //^ 'index' goes via each collection while 'setsId' gets the id as the resultSets is an array of objects
     }
 
+    try { result = await db("Collections").where({userId: userId, id: collectionId}).select(); } catch(err){ res.status(500).json({message: err.message+" | Program error code: GetIDCollectionFlashcardSetsIDUser-3"}); return; }
+    //^ get the collection's metadata
+    result = {result, resultSets};
+    //^ join the collection with its corrosponding sets
     //: success
     res.status(200)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')

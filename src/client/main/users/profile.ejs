@@ -1,17 +1,22 @@
 <%- include('../../assets/header.html') %>
 <title>title</title>
 <script>
-  /*
-async function callScript(){
-  //* script exists as function for allowing to stop script if needed (with 'return')
-  if(!commons.loginCheck()){ return; }
-  //^ ensure user has valid login session
-  //^ potentially saves processing time by doing it client-side here first
-  response =  await fetch();
+async function deleteAcc(event){
+  event.preventDefault();
 
 }
-await callScript();
-*/
+async function ownCollections(event){
+  event.preventDefault();
+
+}
+async function ownSets(event){
+  event.preventDefault();
+
+}
+async function adminPanel(event){
+  event.preventDefault();
+
+}
 </script>
 </header>
 <body>
@@ -30,11 +35,11 @@ await callScript();
     <li>Sets made today: <%=dailySets%>/20</li>
   </ul>
   <h2>actions:</h2>
-  <button onclick="funct()">Edit profile</button>
-  <button onclick="funct()">Delete account</button>
-  <button onclick="funct()">View own collections</button>
-  <button onclick="funct()">View own sets</button>
-  <button onclick="funct()">Admin panel</button>
+  <button onclick="funct(event)">Edit profile</button>
+  <button onclick="deleteAcc(event)">Delete account</button>
+  <button onclick="ownCollections(event)">View own collections</button>
+  <button onclick="ownSets(event)">View own sets</button>
+  <button onclick="adminPanel(event)">Admin panel</button>
   </main>
   <%- include('../../assets/footer.html') %>
 </body>

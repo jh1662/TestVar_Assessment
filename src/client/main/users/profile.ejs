@@ -1,6 +1,80 @@
-<%- include('../../assets/header.html') %>
+<%- include('../../assets/headerSub.html') %>
 <title>title</title>
-<script>
+<script type="module">
+/* Disable script because buttons don't seem to recognise the functions, so I made them refer to another URL instead:
+
+console.log("from commons.js:");
+commons.test();
+//^ Ensure commons is available
+
+//: neccessary because type="module" makes them non-gobal by default
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("DOM has been loaded");
+  document.getElementById("signOut").addEventListener('click', signOut);
+});
+
+async function signOut(event){
+  console.log("attempting to sign out");
+
+  //: set-up
+  let response; let status; let data;
+  event.preventDefault();
+
+  data = {userToken: commons.readToken()}
+  response = await fetch(
+      //* user's request to logout
+      '/user/logout',{
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }
+    );
+  status = response.status
+
+  if (status == 500){
+    //* user isnt logged in
+    response = await response.json()
+    data = {title: "Cannot log out", subTitle: "500", message: res.body.message}
+    response = await fetch(
+      '/message',{
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }
+    );
+    document.body.innerHTML = await response.text();
+    return;
+  }
+  if (status == 401){
+    //* user isnt logged in
+    response = await response.json()
+    data = {title: "Cannot log out", subTitle: "401", message: res.body.message}
+    response = await fetch(
+      '/message',{
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }
+    );
+    document.body.innerHTML = await response.text();
+    return;
+  }
+  if (status == 422){
+    //* user isnt logged in
+    response = await response.json()
+    data = {title: "Cannot log out", subTitle: "422", message: res.body.message}
+    response = await fetch(
+      '/message',{
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }
+    );
+    document.body.innerHTML = await response.text();
+    return;
+  }
+  window.location.href = '/home';
+}
 async function deleteAcc(event){
   event.preventDefault();
 
@@ -17,6 +91,7 @@ async function adminPanel(event){
   event.preventDefault();
 
 }
+*/
 </script>
 </header>
 <body>
@@ -35,11 +110,11 @@ async function adminPanel(event){
     <li>Sets made today: <%=dailySets%>/20</li>
   </ul>
   <h2>actions:</h2>
-  <button onclick="funct(event)">Edit profile</button>
-  <button onclick="deleteAcc(event)">Delete account</button>
-  <button onclick="ownCollections(event)">View own collections</button>
-  <button onclick="ownSets(event)">View own sets</button>
-  <button onclick="adminPanel(event)">Admin panel</button>
+  <a href="/user/deleteConfimation" class="button">Sign Out</a>
+  <a href="https://www.google.com" class="button">Delete account</a>
+  <a href="https://www.google.com" class="button">View own collections</a>
+  <a href="https://www.google.com" class="button">View own sets</a>
+  <a href="https://www.google.com" class="button">Admin panel</a>
   </main>
   <%- include('../../assets/footer.html') %>
 </body>

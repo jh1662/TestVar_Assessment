@@ -20,7 +20,11 @@
     //: try to get user's detail by ID
     response = await fetch(`user/profile/${userId}`,{method: 'GET'});
     status = response.status
-    if (status == 200){ document.body.innerHTML = await response.text(); }
+    if (status == 200){ document.body.innerHTML = await response.text();
+      // window.location.href = `user/profile/${userId}`;
+      //^ done instead to allow profile's JS script to actually execute.
+      //^ nevermind it breaks the entire app instead
+    }
     //commons.messagePage("Notice!", "unimportant warning", "you are already logged in!");
   }
   async function submitForm(event){

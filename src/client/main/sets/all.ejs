@@ -8,7 +8,7 @@
   <%- include('../../assets/nav.html') %>
   <main>
   <h1>All Sets:</h1>
-  <ul>
+  <ol>
     <% for (let index = 0; index < sets.length; index++) { %>
       <% //: convert SQL boolean to "Yes" or "No"
         const humanReadableFormat = {
@@ -31,7 +31,7 @@
          }
       %>
       <li>
-        <ul>
+        <ol>
           <li>set: <%=sets[index].name%></li>
           <li>ID: <%=sets[index].id%></li>
           <li>Author's ID: <%=sets[index].userId%></li>
@@ -40,10 +40,10 @@
           <li>Updated: <%=sets[index].updated%></li>
           <li>Description: <%=sets[index].description%></li>
           <br>
-        </ul>
+        </ol>
       </li>
     <% } %>
-  </ul>
+  </ol>
   </main>
   <%- include('../../assets/footer.html') %>
 </body>

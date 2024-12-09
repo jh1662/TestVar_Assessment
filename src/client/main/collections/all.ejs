@@ -5,19 +5,19 @@
   <%- include('../../assets/nav.html') %>
   <main>
   <h1>All collections:</h1>
-  <ul>
+  <ol>
     <% for (let index = 0; index < collections.length; index++) { %>
         <li>
-            <ul>
+            <ol>
                 <li>Collection: <%=collections[index].name%></li>
                 <li>ID: <%=collections[index].id%></li>
                 <li>Author's ID: <%=collections[index].userId%></li>
                 <li>Description: <%=collections[index].description%></li>
                 <br>
-            </ul>
+            </ol>
         </li>
     <% } %>
-  </ul>
+  </ol>
   </main>
   <%- include('../../assets/footer.html') %>
 </body>

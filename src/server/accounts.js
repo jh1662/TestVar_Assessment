@@ -72,7 +72,7 @@ async function logout(req, res, userToken){
     //* DELETE request
     let userId;
     //^ set up
-    if(userToken === undefined){ res.status(422).json({message: "error - invalid token input, input cannot be empty/undefined"}); return; }
+    if(userToken === undefined){ res.status(422).json({message: "error - empty token input, user isn't logged in right now"}); return; }
     //^ validation
     userId = await token.dropToken(userToken);
     //^ integer above '0' for user id, negative integer if otherwise

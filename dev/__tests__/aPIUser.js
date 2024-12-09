@@ -770,8 +770,8 @@ describe('testing user.GetAllUsersDetails AGAIN ( GET http://localhost:3000/api/
 });
 //#endregion
 
-/*
-describe('testing collections.GetAllCollectionsIDUser ( GET http://localhost:3000/[sub URL] )', () => {
+/* template:
+describe('testing [file].[funct] ( GET http://localhost:3000/[sub URL] )', () => {
   it('returns all user details', async () => {
     const res = await request(app).get('[sub URL]');
     //^ set-up

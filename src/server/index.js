@@ -166,7 +166,9 @@ app.post('/user/login', passport.authenticate('local', {
 app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });
 //^ ideally the first the page user comes to.
 app.get('/home', (req, res) => { res.render('./others/home'); console.log("go home"); });
-app.get('/user', (req, res) => { res.render('./users/login')});
+app.get('/user', (req, res) => { res.render('./users/login'); });
+app.post('/message', async (req, res) => { res.render('./others/message', { title: req.body.title ,subTitle: req.body.subTitle, message: req.body.message }); });
+app.get('/user/deleteConfimation', async (req, res) => { res.render('./users/confirmationDelete'); });
 //#endregion
 app.get('/user/profile/:id', async (req, res) => {
     //* directly retruns responce data without parsing it hence it doesn't support ".json()"
@@ -215,8 +217,8 @@ app.get('/sets/all', async (req, res) => {
     }
     res.render('./others/message', { title: "Error all collections",subtitle: status, message: collections.message });
 });
-app.post('/message', async (req, res) => {
-    res.render('./others/message', { title: req.body.title ,subTitle: req.body.subTitle, message: req.body.message });
+app.post('/user/delete', async (req, res) => {
+
 });
 //#endregion
 

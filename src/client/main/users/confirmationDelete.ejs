@@ -1,0 +1,81 @@
+<%- include('../../assets/headerSub.html') %>
+<title>deletion confirmation</title>
+<script>
+    async function yes(event){
+        console.log("'yes' to deleting account. Proceeding to attempt");
+        //: set-up
+        let response; let status; let data;
+
+        data = {userToken: commons.readToken()}
+        if ((data == "")||(data === undefined)){
+            data = {title: "Cannot log out", subTitle: "500", message: res.body.message}
+            response = await fetch( '/message',{
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }
+        );
+        document.body.innerHTML = await response.text();
+        }
+        response = await fetch( '/user/logout',{
+            //* user's request to logout
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+            }
+        );
+        status = response.status
+
+        if (status == 500){
+        //* user isnt logged in
+        response = await response.json()
+        data = {title: "Cannot log out", subTitle: "500", message: res.body.message}
+        response = await fetch( '/message',{
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+            }
+        );
+        document.body.innerHTML = await response.text();
+        return;
+        }
+        if (status == 401){
+        //* user isnt logged in
+        response = await response.json()
+        data = {title: "Cannot log out", subTitle: "401", message: res.body.message}
+        response = await fetch( '/message',{
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+            }
+        );
+        document.body.innerHTML = await response.text();
+        return;
+        }
+        if (status == 422){
+        //* user isnt logged in
+        response = await response.json()
+        data = {title: "Cannot log out", subTitle: "422", message: res.body.message}
+        response = await fetch( '/message',{
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+            }
+        );
+        document.body.innerHTML = await response.text();
+        return;
+        }
+        window.location.href = '/home';
+    }
+</script>
+</header>
+<body>
+    <%- include('../../assets/nav.html') %>
+    <main>
+        <h1>Are you sure?</h1>
+        <p>Are you sure you want to delete your account?</p>
+        <button onclick="window.location.href = '/home'">No!</button>
+        <button onclick="yes(event)">Yes!</button>
+    </main>
+    <%- include('../../assets/footer.html') %>
+</body>

@@ -31,9 +31,10 @@ async function validateCollectionData(req,res,info){
     //: check each bookmarked set's id validity and existance
     for ( let index = 0; index < info.setsIds.length; index++ ){
         //* validate the sets
-        if (ps.intergerable(info.setsIds[index])!="0"){ res.status(422).json({message: `error with ${index+1}th set id: `+check+" | Program error code: validateCollectionData-6"}); return false; }
+        check = ps.intergerable(info.setsIds[index]);
+        if (check != "0"){ res.status(422).json({message: `error with ${index+1}th set id: `+check+" | Program error code: validateCollectionData-6"}); return false; }
         try{ check = await db('Sets').where({id: info.setsIds[index]}).first() } catch(err){ res.status(500).json({message: err.message+" | Program error code: validateCollectionData-7"}); return false; }
-        if (!check){ res.status(422).json({message: `The ${index+1}th set does not exist`+" | Program error code: validateWholeCollection-8"}); return false; }
+        if (!check){ res.status(404).json({message: `The ${index+1}th set does not exist`+" | Program error code: validateWholeCollection-8"}); return false; }
     }
 
     return true;
@@ -48,10 +49,10 @@ async function validateCollectionOwnership(req,res,info){
     if (check != "0") { res.status(422).json({message: "error with collection id: "+check+" | Program error code: validateCollectionOwnership-2"}); return false; }
 
     //: validate both existances
-    check = rs.userId(info.userId);
-    if (check == true) { res.status(500).json({message: `Error: user's id (${author}) does not exist`+" | Program error code: validateCollectionOwnership-3"}); return false;}
-    check = rs.collectionId(info.collectionId);
-    if (check == true) { res.status(500).json({message: `Error: collection's id (${author}) does not exist`+" | Program error code: validateCollectionOwnership-4"}); return false;}
+    check = await rs.userId(info.userId);
+    if (check == true) { res.status(404).json({message: `Error: user's id (${info.userId}) does not exist`+" | Program error code: validateCollectionOwnership-3"}); return false;}
+    check = await rs.collectionId(info.collectionId);
+    if (check == true) { res.status(404).json({message: `Error: collection's id (${info.collectionId}) does not exist`+" | Program error code: validateCollectionOwnership-4"}); return false;}
 
     //: make sure collection belongs to subjected user
     try { check = await db("Collections").where({id: info.collectionId, userId: info.userId}).select().first(); } catch(err){ res.status(500).json({message: err.message+" | Program error code: validateCollectionOwnership-5"}); return false; }
@@ -97,7 +98,7 @@ async function GetIDCollectionFlashcardSetsIDUser(req,res){
     let result;
     let check;
 
-    if ( !validateCollectionOwnership(req,res,{userId: userId, collectionId: collectionId}) ){ return; }
+    if ( !(await validateCollectionOwnership(req,res,{userId: userId, collectionId: collectionId})) ){ return; }
     //^ make sure user is authorised to do the request
 
     try { check = await db("CollectionsToSets").where({collectionsId: collectionId}).select('setsId'); } catch(err){ res.status(500).json({message: err.message+" | Program error code: GetIDCollectionFlashcardSetsIDUser-1"}); return; }
@@ -134,7 +135,7 @@ async function GetRandomCollection(req,res){
     //^ gather all existing ids
     random = ranInt(takenIds.length-1);
     //^ use randomness for getting a random id
-    try { result = await db("Collections").where({id: takenIds[random].id}).select(); } catch(err){ res.status(500).json({message: err.message+" | Program error code: GetRandomCollection-2"}); return; }
+    try { result = await db("Collections").where({id: takenIds[random].id}).select().first(); } catch(err){ res.status(500).json({message: err.message+" | Program error code: GetRandomCollection-2"}); return; }
     //^ get the random collection.
     //^ takenIds[random] = { id:...
     //: success
@@ -159,9 +160,9 @@ async function PostNewCollection(req,res){
 
     //: check author's existance
     check = await rs.userId(info.userId);
-    if (check == true) { res.status(500).json({message: `Error: user's id (${author}) does not exist`+" | Program error code: PostNewCollection-2"}); return false;}
+    if (check) { res.status(404).json({message: `Error: user's id (${info.userId}) does not exist`+" | Program error code: PostNewCollection-2"}); return false;}
 
-    if( !validateCollectionData(req,res,info) ){ return; }
+    if( !(await validateCollectionData(req,res,info)) ){ return; }
     //^ validate the entire collection (metadata and bookmarked flashcard sets)
     //: if name is unique
     if (!(await rs.collection(info.name))) { res.status(422).json({message: "Another collection has that name! (either yours or another user's)"+" | Program error code: PostNewCollection-3"}); return false; }
@@ -179,7 +180,7 @@ async function PostNewCollection(req,res){
     result.setsIds = info.setsIds;
 
     //: success
-    res.status(200)
+    res.status(201)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     .send(result);
 }
@@ -194,9 +195,9 @@ async function UpdateIDCollection(req,res){
     }
     let result;
 
-    if ( !validateCollectionOwnership(req,res,{userId: info.userId, collectionId: info.collectionId}) ){ return; }
+    if ( !(await validateCollectionOwnership(req,res,{userId: info.userId, collectionId: info.collectionId})) ){ return; }
     //^ is user authorised and are the ids valid and exist?
-    if( !validateCollectionData(req,res,info) ){ return; }
+    if( !(await validateCollectionData(req,res,info)) ){ return; }
     //^ validate the entire collection (metadata and bookmarked flashcard sets)
 
     //: update collection's bookmarked sets
@@ -216,7 +217,7 @@ async function UpdateIDCollection(req,res){
     result.setsIds = info.setsIds;
 
     //: success
-    res.status(200)
+    res.status(201)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     .send(result);
 }
@@ -227,7 +228,7 @@ async function DeleteIDCollection(req,res){
     const userId = req.params.id;
     const collectionId = req.params.cId;
 
-    if ( !validateCollectionOwnership(req,res,{userId: userId, collectionId: collectionId}) ){ return; }
+    if ( !(await validateCollectionOwnership(req,res,{userId: userId, collectionId: collectionId})) ){ return; }
     //^ validate formats and existance of both user and collection by ids
     try{ await db('Collections').where({id: collectionId}).delete(); } catch(err){ res.status(500).json({message: err.message+" | Program error code: DeleteIDCollection"}); return; }
     //^ deleting

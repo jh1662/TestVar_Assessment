@@ -94,7 +94,8 @@ const commons = {
 
         console.log("User isn't logged in right now");
         return false;
-    }
+    },
+    getToken: function(){ return local.readToken(); }
 };
 
         /*

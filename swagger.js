@@ -75,7 +75,7 @@ const doc = {
 };
 
 //: relevent files involed in the file's generation
-const outputFile = './openAPI.yaml';
+const outputFile = './openapi.yaml';
 const routes = ['./src/server/index.js'];
 
 swaggerAutogen(outputFile, routes, doc);

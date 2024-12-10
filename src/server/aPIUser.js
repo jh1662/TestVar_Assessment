@@ -48,13 +48,13 @@ async function checkUserByInfo(req,res,user){
 
     //: check if unique fields are unique
     try{ check = await rs.user(user.username) } catch(err){ res.status(500).json({message: err.message+"  | Program error code: validateUserByInfo-5"}); return false; }
-    if (!check){ res.status(429).json({message: "User (by username) already exists"+"  | Program error code: validateUserByInfo-6"}); return false; }
+    if (!check){ res.status(409).json({message: "User (by username) already exists"+"  | Program error code: validateUserByInfo-6"}); return false; }
     //^ username has to be unique
+    //^ browser code '409' means: resource already exists
 
     return true;
     //^ User is valid
 }
-
 async function validateUserByInfo(req,res,user){
     //* returns true if valid, otherwise send error responce then retrun false.
     //* does NOT include id
@@ -95,8 +95,12 @@ async function resetDailySets(){
 //#endregion
 //#region GET requests
 async function GetAllUsersDetails(req,res){
+    /*
+    #swagger.tags = ['Users']
+    #swagger.responses[200] = { schema: { $ref: '#/definitions/users' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    */
     //await checkTableExists();
-
     //* no req body and no req params
     let result;
     //^ Set-up
@@ -110,6 +114,12 @@ async function GetAllUsersDetails(req,res){
     .send(result);
 }
 async function GetIDUserDetails(req,res){
+    /*
+    #swagger.tags = ['Users']
+    #swagger.responses[200] = { schema: { $ref: '#/definitions/user' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: set-up
     const id = req.params.id;
     //^ gets the varible's value from the URL
@@ -125,6 +135,12 @@ async function GetIDUserDetails(req,res){
     .json(result);
 }
 async function GetUserSets(req,res){
+    /*
+    #swagger.tags = ['Users']
+    #swagger.responses[200] = { schema: { $ref: '#/definitions/sets' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    */
     //* Reads flashcards sets
     //: set-up
     const id = req.params.id;
@@ -144,6 +160,12 @@ async function GetUserSets(req,res){
 //#endregion
 //#region POST requests
 async function PostNewUser(req,res){
+    /*
+    #swagger.tags = ['Users']
+    #swagger.responses[201] = { schema: { $ref: '#/definitions/user' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[409] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: set-up
     const user = {/*id: req.body.id,*/ username: req.body.username, password: req.body.password, admin: req.body.admin};
     let result; let check;
@@ -173,6 +195,13 @@ async function PostGetUserByToken(req,res){
 //#endregion
 //#region PUT requests
 async function PutIDUserUpdate(req,res){
+    /*
+    #swagger.tags = ['Users']
+    #swagger.responses[201] = { schema: { $ref: '#/definitions/user' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[409] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: set-up
     const user = {username: req.body.username, password: req.body.password, admin: req.body.admin};
     const id = req.params.id;
@@ -184,18 +213,24 @@ async function PutIDUserUpdate(req,res){
     if( !(await validateUserByInfo(req,res,user)) ){ return; };
     //^ validation of new updated info
 
-    try { await db('Users').where({ id: id }).update({username: user.username, password: user.password, admin: user.admin}); } catch(err){ res.status(400).json({message: err.message+"  | Program error code: PutIDUserUpdate-3"}); return; }
+    try { await db('Users').where({ id: id }).update({username: user.username, password: user.password, admin: user.admin}); } catch(err){ res.status(500).json({message: err.message+"  | Program error code: PutIDUserUpdate-3"}); return; }
     //^ update user
     try { result = await db('Users').where({ id: id }).select('id', 'username', 'admin', 'dailySets').first(); } catch(err){ res.status(500).json({message: err.message+"  | Program error code:  PutIDUserUpdate-4"}); return; }
     //^ gets info of updated user
     //: success
-    res.status(200)
+    res.status(201)
     .set('Cache-Control', 'no-cache, no-store, must-revalidate').set('Pragma', 'no-cache').set('Expires', '0')
     .json(result);
 }
 //#endregion
 //#region DELETE requests
 async function DeleteIDUser(req,res){
+    /*
+    #swagger.tags = ['Users']
+    #swagger.responses[204] = { }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: set-up
     const id = req.params.id;
     let result;

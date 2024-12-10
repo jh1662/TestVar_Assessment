@@ -53,6 +53,11 @@ token.initialise();
 
 //#region API requests for API version
 app.get('/api', async (req, res) => {
+    /*
+    #swagger.tags = ['General']
+    #swagger.responses[200] = { schema: { $ref: '#/components/schemas/version' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    */
     fs.readFile(path.join(__dirname, '../client/assets/api.json'), 'utf8', (err, data) => {
         if (err) {
             res.status(500).json({message: err.message});

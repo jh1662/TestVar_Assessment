@@ -85,7 +85,7 @@ describe('testing user.PostNewUser ( POST http://localhost:3000/api/users:id )',
     }
     const res = await request(app).post('/api/users').send(req).set('Accept', 'application/json');
 
-    expect(res.status).toBe(429);
+    expect(res.status).toBe(409);
     expect(res.headers['content-type']).toMatch(/json/);
     expect(res.body).toEqual(
       { message: "User (by username) already exists  | Program error code: validateUserByInfo-6"}
@@ -348,7 +348,7 @@ describe('testing user.PutIDUserUpdate ( PUT http://localhost:3000/api/users:id 
 
     console.log(res.body.message);
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
     expect(res.headers['content-type']).toMatch(/json/);
 
     expect(res.body).toEqual(
@@ -372,7 +372,7 @@ describe('testing user.PutIDUserUpdate ( PUT http://localhost:3000/api/users:id 
     }
     const res = await request(app).put('/api/users/2').send(req).set('Accept', 'application/json');
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
     expect(res.headers['content-type']).toMatch(/json/);
     expect(res.body).toEqual(
       {
@@ -395,7 +395,7 @@ describe('testing user.PutIDUserUpdate ( PUT http://localhost:3000/api/users:id 
 
     console.log(res.body.message);
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
     expect(res.headers['content-type']).toMatch(/json/);
 
     expect(res.body).toEqual(
@@ -419,7 +419,7 @@ describe('testing user.PutIDUserUpdate ( PUT http://localhost:3000/api/users:id 
 
     console.log(res.body.message);
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
     expect(res.headers['content-type']).toMatch(/json/);
 
     expect(res.body).toEqual(

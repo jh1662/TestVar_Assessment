@@ -66,6 +66,11 @@ async function checkMetadata(req,res,info){
 //#endregion
 //#region GET requests
 async function GetAllSets(req, res){
+    /*
+    #swagger.tags = ['Flashcard sets']
+    #swagger.responses[200] = { schema: { $ref: '#/definitions/sets' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    */
     let GetAllSets;
     //^ Set-up
     try { GetAllSets = await db("Sets").select() } catch(err){ res.status(500).json({message: err.message+" | Program error code: GetAllSets"}); return; }
@@ -76,6 +81,12 @@ async function GetAllSets(req, res){
     .send(GetAllSets);
 }
 async function GetIDSet(req, res){
+    /*
+    #swagger.tags = ['Flashcard sets']
+    #swagger.responses[200] = { schema: { $ref: '#/definitions/flashcardSet' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: set-up
     let id = req.params.id;
     let check; let set;
@@ -96,6 +107,12 @@ async function GetIDSet(req, res){
     .send(set);
 }
 async function GetIDSetCards(req, res){
+    /*
+    #swagger.tags = ['Flashcard sets']
+    #swagger.responses[200] = { schema: { $ref: '#/definitions/flashcards' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: set up
     let id = req.params.id;
     let check; let result;
@@ -115,6 +132,13 @@ async function GetIDSetCards(req, res){
 //#endregion
 //#region POST requests
 async function CreateNewSet(req,res){
+    /*
+    #swagger.tags = ['Flashcard sets']
+    #swagger.responses[201] = { schema: { $ref: '#/definitions/flashcardSet' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[429] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: Set-up
     const info = { author: req.body.authorID, name: req.body.name, description: req.body.description }
     const cards = req.body.cards;
@@ -153,6 +177,12 @@ async function CreateNewSet(req,res){
     .json(set);
 }
 async function PostIDSetReview(req,res){
+    /*
+    #swagger.tags = ['Flashcard sets']
+    #swagger.responses[201] = { schema: { $ref: '#/definitions/flashcardSet' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: set-up
     let info = {author: req.body.authorID, setId: req.params.id, comment: req.body.comment, rating: req.body.rating};
     let ratingsTotal = 0;
@@ -210,6 +240,12 @@ async function PostIDSetReview(req,res){
 //#endregion
 //#region PUT requests
 async function PutIDSet(req,res){
+    /*
+    #swagger.tags = ['Flashcard sets']
+    #swagger.responses[201] = { schema: { $ref: '#/definitions/flashcardSet' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: Set-up
     const info = { author: req.body.authorID, name: req.body.name.trim(), description: req.body.description.trim() }
     const cards = req.body.cards;
@@ -252,6 +288,13 @@ async function PutIDSet(req,res){
 //#endregion
 //#region DELETE requests
 async function DeleteIDSet(req,res){
+    /*
+    #swagger.tags = ['Flashcard sets']
+    #swagger.responses[204] = { }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[404] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: set-up
     let id = req.params.id;
     let check;

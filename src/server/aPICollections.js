@@ -70,6 +70,13 @@ function ranInt(max) {
 //#endregion
 //#region GET requests
 async function GetAllCollectionsIDUser(req,res){
+    /*
+    #swagger.tags = ['Collections']
+    #swagger.responses[200] = { schema: { $ref: '#/definitions/collections' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[404] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: setup
     let userId = req.params.id;
     let check; let result;
@@ -91,6 +98,14 @@ async function GetAllCollectionsIDUser(req,res){
     .send(result);
 }
 async function GetIDCollectionFlashcardSetsIDUser(req,res){
+    /*
+    #swagger.tags = ['Collections']
+    #swagger.responses[200] = { schema: { $ref: '#/definitions/collection' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[404] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[403] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: setup
     let userId = req.params.id;
     let collectionId = req.params.cId;
@@ -119,6 +134,11 @@ async function GetIDCollectionFlashcardSetsIDUser(req,res){
     .send(result);
 }
 async function GetAllCollections(req,res){
+    /*
+    #swagger.tags = ['Collections']
+    #swagger.responses[200] = { schema: { $ref: '#/definitions/collections' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    */
     let result;
     //^ set-up
     try { result = await db("Collections").select(); } catch(err){ res.status(500).json({message: err.message+" | Program error code: GetAllCollections"}); return; }
@@ -129,6 +149,11 @@ async function GetAllCollections(req,res){
     .send(result);
 }
 async function GetRandomCollection(req,res){
+    /*
+    #swagger.tags = ['Collections']
+    #swagger.responses[200] = { schema: { $ref: '#/definitions/collection' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    */
     let result; let random; let takenIds
     //^ set-up
     try { takenIds = await db("Collections").select('id'); } catch(err){ res.status(500).json({message: err.message+" | Program error code: GetRandomCollection-1"}); return; }
@@ -146,6 +171,13 @@ async function GetRandomCollection(req,res){
 //#endregion
 //#region POST requests
 async function PostNewCollection(req,res){
+    /*
+    #swagger.tags = ['Collections']
+    #swagger.responses[201] = { schema: { $ref: '#/definitions/collection' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[404] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: setup
     const info = {
         userId: req.body.authorId,
@@ -187,6 +219,14 @@ async function PostNewCollection(req,res){
 //#endregion
 //#region PUT requests
 async function UpdateIDCollection(req,res){
+    /*
+    #swagger.tags = ['Collections']
+    #swagger.responses[201] = { schema: { $ref: '#/definitions/collection' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[404] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[403] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: setup
     const info = {
         collectionId: req.params.cId, userId: req.params.id,
@@ -224,6 +264,14 @@ async function UpdateIDCollection(req,res){
 //#endregion
 //#region DELETE requests
 async function DeleteIDCollection(req,res){
+    /*
+    #swagger.tags = ['Collections']
+    #swagger.responses[204] = { }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[404] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[403] = { schema: { $ref: '#/definitions/error' } }
+    */
     //: set-up
     const userId = req.params.id;
     const collectionId = req.params.cId;

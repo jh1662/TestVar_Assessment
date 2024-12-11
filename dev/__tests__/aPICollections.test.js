@@ -4,12 +4,12 @@ const {app, server} = require('../../src/server/index');
 const reFill = require('../dBTest/sampleDatabase');
 
 beforeAll(async () => {
-  console.log("start aPISets tests!");
+  console.log("start aPICollections tests!");
   process.env.NODE_ENV = 'test';
   await reFill.initialiseDB();
 });
 afterAll(async () => {
-  console.log("end aPISets tests!");
+  console.log("end aPICollections tests!");
   clearInterval(global.dailySetsUpdate);
   await reFill.db.destroy();
   if(server) { await server.close();}

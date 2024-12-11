@@ -64,6 +64,9 @@ const doc = {
             version: {
                 $version: "1.0.0"
             },
+            token: {
+                $token: "G3D4HR6CQW52cJNLwMsgezZZaXIAvEidHIekrh0fGfc="
+            },
 
             //: the arrays (for getting multiple of the same schema, such as getting all existing users)
             sets: { $ref: '#/definitions/flashcardSet' },

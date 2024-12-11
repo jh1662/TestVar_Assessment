@@ -67,6 +67,7 @@ async function checkMetadata(req,res,info){
 //#region GET requests
 async function GetAllSets(req, res){
     /*
+    #swagger.summary = 'Get all flashcard sets'
     #swagger.tags = ['Flashcard sets']
     #swagger.responses[200] = { schema: { $ref: '#/definitions/sets' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -82,6 +83,7 @@ async function GetAllSets(req, res){
 }
 async function GetIDSet(req, res){
     /*
+    #swagger.summary = 'Get flashcard set by ID'
     #swagger.tags = ['Flashcard sets']
     #swagger.responses[200] = { schema: { $ref: '#/definitions/flashcardSet' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -108,6 +110,7 @@ async function GetIDSet(req, res){
 }
 async function GetIDSetCards(req, res){
     /*
+    #swagger.summary = 'Get all flashcard in the flashcard set by ID'
     #swagger.tags = ['Flashcard sets']
     #swagger.responses[200] = { schema: { $ref: '#/definitions/flashcards' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -133,6 +136,7 @@ async function GetIDSetCards(req, res){
 //#region POST requests
 async function CreateNewSet(req,res){
     /*
+    #swagger.summary = 'Create a new flashcard set'
     #swagger.tags = ['Flashcard sets']
     #swagger.responses[201] = { schema: { $ref: '#/definitions/flashcardSet' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -178,6 +182,7 @@ async function CreateNewSet(req,res){
 }
 async function PostIDSetReview(req,res){
     /*
+    #swagger.summary = 'post a user review (rating with comment) to a flashcard set by ID'
     #swagger.tags = ['Flashcard sets']
     #swagger.responses[201] = { schema: { $ref: '#/definitions/flashcardSet' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -241,6 +246,7 @@ async function PostIDSetReview(req,res){
 //#region PUT requests
 async function PutIDSet(req,res){
     /*
+    #swagger.summary = 'update a flashcard set by ID'
     #swagger.tags = ['Flashcard sets']
     #swagger.responses[201] = { schema: { $ref: '#/definitions/flashcardSet' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -289,6 +295,7 @@ async function PutIDSet(req,res){
 //#region DELETE requests
 async function DeleteIDSet(req,res){
     /*
+    #swagger.summary = 'Delete a flashcard set by ID'
     #swagger.tags = ['Flashcard sets']
     #swagger.responses[204] = { }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }

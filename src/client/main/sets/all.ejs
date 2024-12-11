@@ -1,14 +1,75 @@
 <%- include('../../assets/headerSub.html') %>
 <title>All sets</title>
 <script>
+//window.submitForm = searchSetId;
 
+async function searchSetId(){
+  console.log("searching for set");
+  //: set-up
+  let response; let status;
+  const input = document.getElementById('inputBox').value;
+
+  response = await fetch(`/set/${input}`,{ method: 'GET'});
+  status = response.status;
+  response = await response.json();
+
+  if(status != 200 && status != 500){
+    //* fail to find set
+    console.log("cannot find set");
+    response = await fetch(
+      //* user's request to login
+      '/message',{
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({title: "Error", subTitle: status, message: response.message })
+      }
+    );
+    document.body.innerHTML = await response.text();
+    return;
+  }
+  if(status == 200){
+    //* found set
+    let cards = "<ul><li><b>CARDS:</b></li>";
+
+    console.log("found set");
+    document.getElementById('mode').innerHTML = "Viewing set";
+    document.getElementById('list').remove();
+
+    for(let index = 0; index < response.cards.length; index++){
+      cards+= `
+      <li>front: ${response.cards[index].front} </li>
+      <li> back: ${response.cards[index].back} </li>
+      <li>difficulty: ${response.cards[index].difficulty} </li>
+      <br>
+      `
+    }
+    cards += "</ul>";
+
+    document.getElementById('main').innerHTML += `<ul id="list">
+    <li>set: ${response.name} </li>
+    <li>ID: ${response.id} </li>
+    <li>Author's ID: ${response.userId} </li>
+    <li>Average rating: ${response.averageReview} </li>
+    <li>Created: ${response.created} </li>
+    <li>Updated: ${response.updated} </li>
+    <li>Description: ${response.description} </li>
+    <li>Cards: ${cards} </li>
+    <ul>`;
+  }
+}
 </script>
 </header>
 <body>
   <%- include('../../assets/nav.html') %>
-  <main>
-  <h1>All Sets:</h1>
-  <ol>
+  <main id="main">
+  <h1>Sets:</h1>
+  <h2>View by ID:</h2>
+    <form id="formId">
+      <input type="text" id="inputBox">
+      <button type="button" onclick="searchSetId()">Search</button>
+    </form>
+  <h2 id="mode">View all:</h2>
+  <ol id="list">
     <% for (let index = 0; index < sets.length; index++) { %>
       <% //: convert SQL boolean to "Yes" or "No"
         const humanReadableFormat = {

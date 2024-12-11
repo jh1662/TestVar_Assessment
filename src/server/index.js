@@ -49,11 +49,16 @@ app.use(express.static(path.join(__dirname, '../client/staticAssets/')));
 //: set up, instantiate, and initialise the middleware sucurity
 const token = require('./middlewareFramework');
 token.initialise();
+
+const customAxios = axios.create({ validateStatus: function (status) { return true; } });
+//^ prevents server from crashing when a 4XX or 5XX status code is encountered
+
 //#endregion
 
 //#region API requests for API version
 app.get('/api', async (req, res) => {
     /*
+    #swagger.summary = 'get API version'
     #swagger.tags = ['General']
     #swagger.responses[200] = { schema: { $ref: '#/components/schemas/version' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -168,14 +173,54 @@ app.post('/user/login', passport.authenticate('local', {
 //#endregion
 //#region front-end to app (Corrosponds loading website pages to URLs)
 //#region just renders or redirects
-app.get('/', (req, res) => { res.redirect('/home'); console.log("redirect"); });
+app.get('/', (req, res) => {
+    /*
+    #swagger.summary = 'redirects to /home'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[302] = { schema: { } }
+    */
+    res.redirect('/home'); console.log("redirect");
+});
 //^ ideally the first the page user comes to.
-app.get('/home', (req, res) => { res.render('./others/home'); console.log("go home"); });
-app.get('/user', (req, res) => { res.render('./users/login'); });
-app.post('/message', async (req, res) => { res.render('./others/message', { title: req.body.title ,subTitle: req.body.subTitle, message: req.body.message }); });
-app.get('/user/deleteConfimation', async (req, res) => { res.render('./users/confirmationDelete'); });
+app.get('/home', (req, res) => {
+    /*
+    #swagger.summary = 'Renders the home page'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[200] = { schema: { } }
+    */
+    res.render('./others/home'); console.log("go home");
+});
+app.get('/user', (req, res) => {
+    /*
+    #swagger.summary = 'Renders the login page'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[200] = { schema: { } }
+    */
+    res.render('./users/login');
+});
+app.post('/message', async (req, res) => {
+    /*
+    #swagger.summary = 'Renders the message/error page'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[200] = { schema: { } }
+    */
+    res.render('./others/message', { title: req.body.title ,subTitle: req.body.subTitle, message: req.body.message });
+});
+app.get('/user/deleteConfimation', async (req, res) => {
+    res.render('./users/confirmationDelete');
+    /*
+    #swagger.summary = 'Renders the confirmation user deletion page'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[200] = { schema: { } }
+    */
+});
 //#endregion
 app.get('/user/profile/:id', async (req, res) => {
+    /*
+    #swagger.summary = 'Renders the profile or the message/error page'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[200] = { schema: { } }
+    */
     //* directly retruns responce data without parsing it hence it doesn't support ".json()"
     const userId = req.params.id;
     //const profile = await axios.get(`/api/users/${userId}`);
@@ -201,6 +246,11 @@ app.post('/message', (req, res) => { res.render('./others/message',{
 });
 */
 app.get('/collections/all', async (req, res) => {
+    /*
+    #swagger.summary = 'Renders the collections page'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[200] = { schema: { } }
+    */
     let collections = await axios.get(`http://localhost:3000/api/collections`);
     const status  = collections.status;
     collections = collections.data;
@@ -212,6 +262,11 @@ app.get('/collections/all', async (req, res) => {
     res.render('./others/message', { title: "Error all collections",subtitle: status, message: collections.message });
 });
 app.get('/sets/all', async (req, res) => {
+    /*
+    #swagger.summary = 'Renders the sets page'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[200] = { schema: { } }
+    */
     let sets = await axios.get(`http://localhost:3000/api/sets`);
     const status  = sets.status;
     sets = sets.data;
@@ -223,7 +278,29 @@ app.get('/sets/all', async (req, res) => {
     res.render('./others/message', { title: "Error all collections",subtitle: status, message: collections.message });
 });
 app.post('/user/delete', async (req, res) => {
-
+    /*
+    #swagger.summary = 'Calls to delete user by ID'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[204] = { schema: { } }
+    */
+});
+app.get('/set/:id', async (req, res) => {
+    /*
+    #swagger.summary = 'Renders flashcard set data by ID'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[200] = { schema: { } }
+    */
+    let data; let status; let response
+    //^ set-up
+    response = await customAxios.get(`http://localhost:3000/api/sets/${req.params.id}`);
+    //^ get set
+    status = response.status
+    data = response.data;
+    response = await customAxios.get(`http://localhost:3000/api/sets/${req.params.id}/cards`);
+    //^ get set's corroponding cards
+    data.cards = response.data;
+    res.status(status).send(data);
+    //^ success
 });
 //#endregion
 

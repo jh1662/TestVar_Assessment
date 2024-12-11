@@ -71,6 +71,7 @@ function ranInt(max) {
 //#region GET requests
 async function GetAllCollectionsIDUser(req,res){
     /*
+    #swagger.summary = 'Get all flashcard set collections made by user by ID'
     #swagger.tags = ['Collections']
     #swagger.responses[200] = { schema: { $ref: '#/definitions/collections' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -99,6 +100,7 @@ async function GetAllCollectionsIDUser(req,res){
 }
 async function GetIDCollectionFlashcardSetsIDUser(req,res){
     /*
+    #swagger.summary = 'Get a flashcard set collection made by user by user ID and collection ID'
     #swagger.tags = ['Collections']
     #swagger.responses[200] = { schema: { $ref: '#/definitions/collection' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -135,6 +137,7 @@ async function GetIDCollectionFlashcardSetsIDUser(req,res){
 }
 async function GetAllCollections(req,res){
     /*
+    #swagger.summary = 'Get all flashcard set collections'
     #swagger.tags = ['Collections']
     #swagger.responses[200] = { schema: { $ref: '#/definitions/collections' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -150,6 +153,7 @@ async function GetAllCollections(req,res){
 }
 async function GetRandomCollection(req,res){
     /*
+    #swagger.summary = 'Get a random flashcard set collection'
     #swagger.tags = ['Collections']
     #swagger.responses[200] = { schema: { $ref: '#/definitions/collection' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -172,6 +176,7 @@ async function GetRandomCollection(req,res){
 //#region POST requests
 async function PostNewCollection(req,res){
     /*
+    #swagger.summary = 'Create a flashcard set collection'
     #swagger.tags = ['Collections']
     #swagger.responses[201] = { schema: { $ref: '#/definitions/collection' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -220,6 +225,7 @@ async function PostNewCollection(req,res){
 //#region PUT requests
 async function UpdateIDCollection(req,res){
     /*
+    #swagger.summary = 'Update a flashcard set collection by the owner of said collection by ID'
     #swagger.tags = ['Collections']
     #swagger.responses[201] = { schema: { $ref: '#/definitions/collection' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -265,6 +271,7 @@ async function UpdateIDCollection(req,res){
 //#region DELETE requests
 async function DeleteIDCollection(req,res){
     /*
+    #swagger.summary = 'Delete a flashcard set collection by the owner of said collection by ID'
     #swagger.tags = ['Collections']
     #swagger.responses[204] = { }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }

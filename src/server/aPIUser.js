@@ -96,6 +96,7 @@ async function resetDailySets(){
 //#region GET requests
 async function GetAllUsersDetails(req,res){
     /*
+    #swagger.summary = 'Get all users accounts'
     #swagger.tags = ['Users']
     #swagger.responses[200] = { schema: { $ref: '#/definitions/users' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -115,6 +116,7 @@ async function GetAllUsersDetails(req,res){
 }
 async function GetIDUserDetails(req,res){
     /*
+    #swagger.summary = 'Get user account by ID'
     #swagger.tags = ['Users']
     #swagger.responses[200] = { schema: { $ref: '#/definitions/user' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -136,6 +138,7 @@ async function GetIDUserDetails(req,res){
 }
 async function GetUserSets(req,res){
     /*
+    #swagger.summary = 'Get user flashcard sets by ID'
     #swagger.tags = ['Users']
     #swagger.responses[200] = { schema: { $ref: '#/definitions/sets' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -161,6 +164,7 @@ async function GetUserSets(req,res){
 //#region POST requests
 async function PostNewUser(req,res){
     /*
+    #swagger.summary = 'Register a new user accounts'
     #swagger.tags = ['Users']
     #swagger.responses[201] = { schema: { $ref: '#/definitions/user' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -187,15 +191,31 @@ async function PostNewUser(req,res){
     .json(result);
 }
 async function PostUserLogin(req,res){
+    /*
+    #swagger.summary = 'User logs in'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[201] = { schema: { $ref: '#/definitions/token' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    */
     login.login(req,res);
 }
 async function PostGetUserByToken(req,res){
+    /*
+    #swagger.summary = 'Check if user is currently logged in'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[201] = { schema: { $ref: '#/definitions/token' } }
+    #swagger.responses[401] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    */
     login.whichUserLogin(req,res);
 }
 //#endregion
 //#region PUT requests
 async function PutIDUserUpdate(req,res){
     /*
+    #swagger.summary = 'Update user account by ID'
     #swagger.tags = ['Users']
     #swagger.responses[201] = { schema: { $ref: '#/definitions/user' } }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -226,6 +246,7 @@ async function PutIDUserUpdate(req,res){
 //#region DELETE requests
 async function DeleteIDUser(req,res){
     /*
+    #swagger.summary = 'Register a new user account'
     #swagger.tags = ['Users']
     #swagger.responses[204] = { }
     #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
@@ -245,7 +266,15 @@ async function DeleteIDUser(req,res){
     .json(result);
 }
 async function DeleteUserLogout(req,res){
-    login.dropToken(req,res);
+    /*
+    #swagger.summary = 'User logs in'
+    #swagger.tags = ['redirects/communication']
+    #swagger.responses[204] = { schema: { } }
+    #swagger.responses[422] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[401] = { schema: { $ref: '#/definitions/error' } }
+    #swagger.responses[500] = { schema: { $ref: '#/definitions/error' } }
+    */
+    login.logout(req,res);
 }
 //#endregion
 

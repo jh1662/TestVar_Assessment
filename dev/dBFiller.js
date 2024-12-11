@@ -12,15 +12,19 @@ async function fill() {
       { username: 'dripler', password: 'ALDI', admin: true, dailySets: 20 }
     ]);
     await db('Sets').insert([
-      { name: 'da quiz', averageReview: 4.5, userId: 1, description: "set of random questions", created: "2024-11-23T15:27:30.153Z" }
+      { name: 'da quiz', averageReview: 4.5, userId: 1, description: "set of random questions", created: "2024-11-23T15:27:30.153Z" },
+      { name: 'ABCs', averageReview: 0, userId: 2, description: "simple stuff really", created: "2024-11-22T15:27:30.153Z" }
     ]);
     await db('Flashcards').insert([
       { front: 'what is 2+2 ?', back: '4', difficulty: 1, setsId: 1 },
       { front: 'what is hi spelled backwards?', back: 'ih', difficulty: 3, setsId: 1 },
-      { front: 'If a grain of rice was shot at an initial velocity of 20 miles per hour at 5 meters high, how long until the rice hit the ground taking into account the curve of the earth but not gravity to 6 d.p.?', back: '3.457565 seconds', difficulty: 0, setsId: 1 }
+      { front: 'If a grain of rice was shot at an initial velocity of 20 miles per hour at 5 meters high, how long until the rice hit the ground taking into account the curve of the earth but not gravity to 6 d.p.?', back: '3.457565 seconds', difficulty: 0, setsId: 1 },
+      { front: 'what is 3*3 ?', back: '9', difficulty: 2, setsId: 2 },
+      { front: 'If you have a bucket of 9 litres and a bucket of 4 litres, how many buckets do you have?', back: '2', difficulty: 3, setsId: 2 }
     ]);
     await db('Collections').insert([
-      { name: 'my favs', description: "I really like these set(s)", userId: 1 }
+      { name: 'my favs', description: "I really like these set(s)", userId: 1 },
+      { name: 'revision', description: "for me and friends", userId: 2 }
     ]);
     await db('Reviews').insert([
       { rating: 5, userId: 3, setId: 1, created: "2024-11-24T15:27:30.153Z", comment: "YOOOOOOOOOOOOOOOOOO" },
@@ -32,7 +36,9 @@ async function fill() {
     ]);
     */
     await db('CollectionsToSets').insert([
-      { collectionsId: 1, setsId: 1 }
+      { collectionsId: 1, setsId: 1 },
+      { collectionsId: 2, setsId: 1 },
+      { collectionsId: 2, setsId: 2 }
     ]);
 
     console.log('Data inserted successfully');

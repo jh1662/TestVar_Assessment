@@ -6,9 +6,9 @@
         //: set-up
         let response; let status; let data;
 
-        data = {userToken: commons.readToken()}
+        data = {userToken: commons.getToken()}
         if ((data == "")||(data === undefined)){
-            data = {title: "Cannot log out", subTitle: "500", message: res.body.message}
+            data = {title: "Cannot log out", subTitle: "500", message: response.message}
             response = await fetch( '/message',{
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -25,11 +25,12 @@
             }
         );
         status = response.status
+        response = await response.json()
+        console.log(response);
 
         if (status == 500){
         //* user isnt logged in
-        response = await response.json()
-        data = {title: "Cannot log out", subTitle: "500", message: res.body.message}
+        data = {title: "Cannot log out", subTitle: "500", message: response.message}
         response = await fetch( '/message',{
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -41,8 +42,7 @@
         }
         if (status == 401){
         //* user isnt logged in
-        response = await response.json()
-        data = {title: "Cannot log out", subTitle: "401", message: res.body.message}
+        data = {title: "Cannot log out", subTitle: "401", message: response.message}
         response = await fetch( '/message',{
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -54,8 +54,7 @@
         }
         if (status == 422){
         //* user isnt logged in
-        response = await response.json()
-        data = {title: "Cannot log out", subTitle: "422", message: res.body.message}
+        data = {title: "Cannot log out", subTitle: "422", message: response.message}
         response = await fetch( '/message',{
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
